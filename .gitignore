@@ -1,3 +1,7 @@
 plotly.py
 __pycache__
 __init.py__
+.ipynb_checkpoints
+*.o
+*.cgh
+*.x
