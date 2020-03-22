@@ -1,0 +1,349 @@
+/****************************************************************
+ *****************************************************************
+ *  _/    _/  _/_/_/  _/      Numerical Simulation Laboratory
+ * _/_/  _/ _/       _/       Physics Department
+ * _/  _/_/    _/    _/       Universita' degli Studi di Milano
+ * _/    _/       _/ _/       Prof. D.E. Galli
+ * _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
+ *****************************************************************
+ *****************************************************************/
+
+#include "random.h"
+
+using namespace std;
+
+static string outPath = "../out/";
+
+Random :: Random(){ }
+
+Random :: ~Random(){ }
+
+void
+Random :: SaveSeed()
+{
+    ofstream WriteSeed;
+
+    WriteSeed.open(outPath + "seed.out");
+    if (WriteSeed.is_open()) {
+        WriteSeed << l1 << " " << l2 << " " << l3 << " " << l4 << endl;
+        ;
+    } else { cerr << "ERROR: Unable to open random.out" << endl; }
+    WriteSeed.close();
+}
+
+double
+Random :: Gauss(double mean, double sigma)
+{
+    double s = this->Rannyu();
+    double t = this->Rannyu();
+    double x = sqrt(-2. * log(1. - s)) * cos(2. * M_PI * t);
+
+    return mean + x * sigma;
+}
+
+double
+Random :: Rannyu(double min, double max)
+{
+    return min + (max - min) * this->Rannyu();
+}
+
+double
+Random :: Rannyu(void)
+{
+    const double twom12 = 0.000244140625;
+    int i1, i2, i3, i4;
+    double r;
+
+    i1 = l1 * m4 + l2 * m3 + l3 * m2 + l4 * m1 + n1;
+    i2 = l2 * m4 + l3 * m3 + l4 * m2 + n2;
+    i3 = l3 * m4 + l4 * m3 + n3;
+    i4 = l4 * m4 + n4;
+    l4 = i4 % 4096;
+    i3 = i3 + i4 / 4096;
+    l3 = i3 % 4096;
+    i2 = i2 + i3 / 4096;
+    l2 = i2 % 4096;
+    l1 = (i1 + i2 / 4096) % 4096;
+    r  = twom12 * (l1 + twom12 * (l2 + twom12 * (l3 + twom12 * (l4))));
+
+    return r;
+}
+
+void
+Random :: SetRandom(int * s, int p1, int p2)
+{
+    m1 = 502;
+    m2 = 1521;
+    m3 = 4071;
+    m4 = 2107;
+    l1 = s[0] % 4096;
+    l2 = s[1] % 4096;
+    l3 = s[2] % 4096;
+    l4 = s[3] % 4096;
+    l4 = 2 * (l4 / 2) + 1;
+    n1 = 0;
+    n2 = 0;
+    n3 = p1;
+    n4 = p2;
+}
+
+// set random using default method specifing a seed file
+void
+Random :: SetRandom(string iseed)
+{
+    int seed[4];
+    int p1, p2;
+    ifstream Primes("../../RC/Primes");
+
+    if (Primes.is_open()) {
+        Primes >> p1 >> p2;
+    } else { cerr << "ERROR: Unable to open Primes" << endl; }
+    Primes.close();
+
+    ifstream input(iseed);
+    string property;
+    if (input.is_open()) {
+        while (!input.eof() ) {
+            input >> property;
+            if (property == "RANDOMSEED") {
+                input >> seed[0] >> seed[1] >> seed[2] >> seed[3];
+                this->SetRandom(seed, p1, p2);
+            }
+        }
+        input.close();
+    } else { cerr << "ERROR: Unable to open " + iseed << endl; }
+}
+
+// set random using default method using default seed file
+void
+Random :: SetRandom()
+{
+    this->SetRandom("../../RC/seed.in");
+}
+
+// Exponential random using inverse CDF method
+double
+Random :: Exp(double lambda)
+{
+    return -(1. / lambda) * (log(1 - this->Rannyu()));
+}
+
+// Cauchy random using inverse CDF method
+double
+Random :: Cauchy(double mu, double lambda)
+{
+    return mu + lambda * tan(M_PI * (this->Rannyu() - 0.5));
+}
+
+// get random vector of _size = size an distributed unif [0,1]
+vector<double>
+getRannyu(Random & rnd, unsigned int size)
+{
+    auto gen = [&](){
+          return rnd.Rannyu();
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size an distributed unif [min, max]
+vector<double>
+getRannyu(Random & rnd, unsigned int size, double min, double max)
+{
+    auto gen = [&](){
+          return rnd.Rannyu(min, max);
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size an distributed gaus(mean, sigma)
+vector<double>
+getGauss(Random & rnd, unsigned int size, double mean, double sigma)
+{
+    auto gen = [&](){
+          return rnd.Gauss(mean, sigma);
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size an distributed Exp(lambda)
+vector<double>
+getExp(Random & rnd, unsigned int size, double lambda)
+{
+    auto gen = [&](){
+          return rnd.Exp(lambda);
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size an distributed Cauchy(mu, lambda)
+vector<double>
+getCauchy(Random & rnd, unsigned int size, double mu, double lambda)
+{
+    auto gen = [&](){
+          return rnd.Cauchy(mu, lambda);
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// write the input vector to a file inside out dir
+void
+writeVector(vector<double> & vct, string ofile)
+{
+    ofstream ofs(outPath + ofile + ".out");
+
+    ostream_iterator<double> output_iterator(ofs, "\n");
+
+    if (ofs.is_open()) {
+        copy(vct.begin(), vct.end(), output_iterator);
+    } else { cerr << "ERROR: Unable to open " + ofile + ".out" << endl; }
+
+    ofs.close();
+}
+
+/***************************************************************************
+* BLOCKING METHOD ***
+* TO CHECK NUMERIC SIMULATION CONVERGENCE ***
+*
+* Write to file _oname-mean-conv.csv inside out dir
+*   mean + mean statistical uncertainty convergence of the random
+*   vector vct divided in nblk
+* Write to file _oname-var-conv.csv inside out dir
+*   variance + variance statistical uncertainty convergence of the random
+*   vector vct divided in nblk, using mean_teo as expetation value
+***************************************************************************/
+void
+blockingMethod(vector<double> & vct, double mean_teor, unsigned int nblk, string oname)
+{
+    if (vct.size() % nblk != 0) {
+        cerr << "ERROR: Throw size not divisible by block size exactly" << endl;
+    }
+
+    // number of elements per block
+    unsigned int L = vct.size() / nblk;
+
+    /****************************************
+    *  the idea is too have dict for every block
+    *  dict keys for i-th block
+    *  - mean  : r_i
+    *  - mean2 : (r_i)^2
+    *  - var   : sigma^2_{r_i}
+    *  - var2  : (sigma^2_{r_i})^2
+    ****************************************/
+    vector<map<string, double> > blks(nblk);
+
+    /****************************************
+    *  the idea is too have dict for every block
+    *  dict keys for i-th block
+    *  - mean     : cumulative average
+    *  - mean2    : cumulative square average
+    *  - err_mean : statistical uncertainty over mean
+    *  - var      : cumulative average
+    *  - var2     : cumulative square average
+    *  - err_var  : statistical uncertainty over variance
+    ****************************************/
+    vector<map<string, double> > sum_blks(nblk);
+
+    /*******************************************
+    * calculate r_i, (r_i)^2
+    * calculate sigma^2_{r_i}, (sigma^2_{r_i})^2
+    *******************************************/
+    auto i(0);
+    // accumulate binary lambda operator for blk
+    auto acc = [&](double a, double b){
+          return a + pow((b - mean_teor), 2);
+      };
+    for (auto & blk : blks) {
+        blk["mean"]  = accumulate(vct.begin() + i * L, vct.begin() + (i + 1) * L, 0.0d) / L;
+        blk["mean2"] = pow(blk["mean"], 2);
+        blk["var"]   = accumulate(vct.begin() + i * L, vct.begin() + (i + 1) * L, 0.0d, acc) / L;
+        blk["var2"]  = pow(blk["var"], 2);
+        i += 1;
+    }
+
+    /****************************************
+    *  calculate
+    *    cumulative average,
+    *    cumulative square average,
+    *    statistical uncertainty on mean
+    *  calculate
+    *    cumulative average,
+    *    cumulative square average,
+    *    statistical uncertainty on variance
+    ****************************************/
+    i = 0;
+
+    for (auto & sum_blk : sum_blks) {
+        for (const auto pair : *blks.begin()) {
+            // accumulate binary lambda operator for sum_blk
+            auto acc2 = [&](double a, map<string, double> & b){
+                  return a + b[pair.first];
+              };
+            sum_blk[pair.first] =
+              accumulate(blks.begin(), blks.begin() + (i + 1), 0.0d, acc2) / (i + 1);
+        }
+        // better to use (i+1)-1 = i cause (i+1)->nblk
+        if (i == 0) {
+            sum_blk["err_mean"] = 0;
+            sum_blk["err_var"]  = 0;
+        } else {
+            sum_blk["err_mean"] = sqrt((sum_blk["mean2"] - pow(sum_blk["mean"], 2)) / i);
+            sum_blk["err_var"]  = sqrt((sum_blk["var2"] - pow(sum_blk["var"], 2)) / i);
+        }
+        i += 1;
+    }
+
+    string of1(oname + "mean-conv.csv");
+    string of2(oname + "var-conv.csv");
+    ofstream ofs(outPath + of1);
+
+    if (ofs.is_open()) {
+        for (auto & sum_blk : sum_blks) {
+            ofs << sum_blk["mean"] << "," << sum_blk["err_mean"] << endl;
+        }
+    } else { cerr << "ERROR: Unable to open " + of1 << endl; }
+
+    ofs.close();
+    ofs = ofstream(outPath + of2);
+
+    if (ofs.is_open()) {
+        for (auto & sum_blk : sum_blks) {
+            ofs << sum_blk["var"] << "," << sum_blk["err_var"] << endl;
+        }
+    } else { cerr << "ERROR: Unable to open " + of1 << endl; }
+    ofs.close();
+} // blockingMethod
+
+/****************************************************************
+ *****************************************************************
+ *  _/    _/  _/_/_/  _/      Numerical Simulation Laboratory
+ * _/_/  _/ _/       _/       Physics Department
+ * _/  _/_/    _/    _/       Universita' degli Studi di Milano
+ * _/    _/       _/ _/       Prof. D.E. Galli
+ * _/    _/  _/_/_/  _/_/_/_/ email: Davide.Galli@unimi.it
+ *****************************************************************
+ *****************************************************************/
