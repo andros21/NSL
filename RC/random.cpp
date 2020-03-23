@@ -26,7 +26,6 @@ Random :: SaveSeed()
     WriteSeed.open(outPath + "seed.out");
     if (WriteSeed.is_open()) {
         WriteSeed << l1 << " " << l2 << " " << l3 << " " << l4 << endl;
-        ;
     } else { cerr << "ERROR: Unable to open random.out" << endl; }
     WriteSeed.close();
 }
@@ -114,13 +113,6 @@ Random :: SetRandom(string iseed)
     } else { cerr << "ERROR: Unable to open " + iseed << endl; }
 }
 
-// set random using default method using default seed file
-void
-Random :: SetRandom()
-{
-    this->SetRandom("../../RC/seed.in");
-}
-
 // Exponential random using inverse CDF method
 double
 Random :: Exp(double lambda)
@@ -135,11 +127,34 @@ Random :: Cauchy(double mu, double lambda)
     return mu + lambda * tan(M_PI * (this->Rannyu() - 0.5));
 }
 
-// get random vector of _size = size an distributed unif [0,1]
+// Cosine of 2D random angle
+double
+Random :: Cosine()
+{
+    pair<double, double> pt;
+    double rr;
+
+    do {
+        pt.first  = this->Rannyu(-1., 1.);
+        pt.second = this->Rannyu(0., 1.);
+        rr        = pow(pt.first, 2) + pow(pt.second, 2);
+    } while (rr > 1.);
+
+    return (pow(pt.first, 2) - pow(pt.second, 2)) / rr;
+}
+
+// Sine of 2D random angle
+double
+Random :: Sine()
+{
+    return sqrt(1. - pow(this->Cosine(), 2));
+}
+
+// get random vector of _size = size, distributed unif [0,1]
 vector<double>
 getRannyu(Random & rnd, unsigned int size)
 {
-    auto gen = [&](){
+    auto gen = [&rnd](){
           return rnd.Rannyu();
       };
 
@@ -150,11 +165,11 @@ getRannyu(Random & rnd, unsigned int size)
     return v;
 }
 
-// get random vector of _size = size an distributed unif [min, max]
+// get random vector of _size = size, distributed unif [min, max]
 vector<double>
 getRannyu(Random & rnd, unsigned int size, double min, double max)
 {
-    auto gen = [&](){
+    auto gen = [&rnd, &min, &max](){
           return rnd.Rannyu(min, max);
       };
 
@@ -165,11 +180,11 @@ getRannyu(Random & rnd, unsigned int size, double min, double max)
     return v;
 }
 
-// get random vector of _size = size an distributed gaus(mean, sigma)
+// get random vector of _size = size, distributed gaus(mean, sigma)
 vector<double>
 getGauss(Random & rnd, unsigned int size, double mean, double sigma)
 {
-    auto gen = [&](){
+    auto gen = [&rnd, &mean, &sigma](){
           return rnd.Gauss(mean, sigma);
       };
 
@@ -180,11 +195,11 @@ getGauss(Random & rnd, unsigned int size, double mean, double sigma)
     return v;
 }
 
-// get random vector of _size = size an distributed Exp(lambda)
+// get random vector of _size = size, distributed Exp(lambda)
 vector<double>
 getExp(Random & rnd, unsigned int size, double lambda)
 {
-    auto gen = [&](){
+    auto gen = [&rnd, &lambda](){
           return rnd.Exp(lambda);
       };
 
@@ -195,12 +210,42 @@ getExp(Random & rnd, unsigned int size, double lambda)
     return v;
 }
 
-// get random vector of _size = size an distributed Cauchy(mu, lambda)
+// get random vector of _size = size, distributed Cauchy(mu, lambda)
 vector<double>
 getCauchy(Random & rnd, unsigned int size, double mu, double lambda)
 {
-    auto gen = [&](){
+    auto gen = [&rnd, &mu, &lambda](){
           return rnd.Cauchy(mu, lambda);
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size, cosine of distributed unfi 2D angle [0,2pi]
+vector<double>
+getCosine(Random & rnd, unsigned int size)
+{
+    auto gen = [&rnd](){
+          return rnd.Cosine();
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size, sine of distributed unfi 2D angle [0,2pi]
+vector<double>
+getSine(Random & rnd, unsigned int size)
+{
+    auto gen = [&rnd](){
+          return rnd.Sine();
       };
 
     vector<double> v(size);
@@ -274,7 +319,7 @@ blockingMethod(vector<double> & vct, double mean_teor, unsigned int nblk, string
     *******************************************/
     auto i(0);
     // accumulate binary lambda operator for blk
-    auto acc = [&](double a, double b){
+    auto acc = [&mean_teor](double a, double b){
           return a + pow((b - mean_teor), 2);
       };
     for (auto & blk : blks) {
@@ -300,7 +345,7 @@ blockingMethod(vector<double> & vct, double mean_teor, unsigned int nblk, string
     for (auto & sum_blk : sum_blks) {
         for (const auto pair : *blks.begin()) {
             // accumulate binary lambda operator for sum_blk
-            auto acc2 = [&](double a, map<string, double> & b){
+            auto acc2 = [&pair](double a, map<string, double> & b){
                   return a + b[pair.first];
               };
             sum_blk[pair.first] =
@@ -317,8 +362,8 @@ blockingMethod(vector<double> & vct, double mean_teor, unsigned int nblk, string
         i += 1;
     }
 
-    string of1(oname + "mean-conv.csv");
-    string of2(oname + "var-conv.csv");
+    string of1(oname + "-mean-conv.csv");
+    string of2(oname + "-var-conv.csv");
     ofstream ofs(outPath + of1);
 
     if (ofs.is_open()) {

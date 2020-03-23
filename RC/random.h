@@ -36,9 +36,7 @@ public:
     void
     SetRandom(int *, int, int);
     void
-    SetRandom(string iseed);
-    void
-    SetRandom();
+    SetRandom(string iseed = "../../RC/seed.in");
     void
     SaveSeed();
     double
@@ -51,6 +49,10 @@ public:
     Exp(double lambda);
     double
     Cauchy(double mu, double lambda);
+    double
+    Sine();
+    double
+    Cosine();
 };
 
 vector<double>
@@ -63,6 +65,10 @@ vector<double>
 getExp(Random & rnd, unsigned int size, double lambda = 1.);
 vector<double>
 getCauchy(Random & rnd, unsigned int size, double mu = 0., double lambda = 1.);
+vector<double>
+getCosine(Random & rnd, unsigned int size);
+vector<double>
+getSine(Random & rnd, unsigned int size);
 void
 writeVector(vector<double> & vct, string ofile = "rand");
 void
