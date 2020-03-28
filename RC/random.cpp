@@ -282,7 +282,7 @@ writeVector(vector<double> & vct, string ofile)
 *   vector vct divided in nblk, using mean_teo as expetation value
 ***************************************************************************/
 void
-blockingMethod(vector<double> & vct, double mean_teor, unsigned int nblk, string oname)
+blockingMethod_old(vector<double> & vct, double mean_teor, unsigned int nblk, string oname)
 {
     if (vct.size() % nblk != 0) {
         cerr << "ERROR: Throw size not divisible by block size exactly" << endl;
@@ -381,6 +381,60 @@ blockingMethod(vector<double> & vct, double mean_teor, unsigned int nblk, string
         }
     } else { cerr << "ERROR: Unable to open " + of1 << endl; }
     ofs.close();
+} // blockingMethod_old
+
+/***************************************************************************
+* BLOCKING METHOD ***
+* TO CHECK NUMERIC SIMULATION CONVERGENCE ***
+*
+* Input:
+* - _lbf, function of the expirement to simulate
+* - _nthrow, number of random generation
+* - _nblk, number of blocks or numer of simulations
+* - _oname, name of the file csv in output
+***************************************************************************/
+void
+blockingMethod(function<double(unsigned int)> lbf, unsigned int nthrow, unsigned int nblk, string oname)
+{
+    if (nthrow % nblk != 0) {
+        cerr << "ERROR: Throw size not divisible by block size exactly" << endl;
+    }
+
+    string of1(oname + "-blk.csv");
+    ofstream ofs(outPath + of1);
+
+    vector<double> vals(nblk);      // r_i
+    vector<double> means(nblk);     // cumulative average
+    vector<double> errs(nblk);      // statistical uncertainty
+    unsigned int L = nthrow / nblk; // generation per block
+
+    // expirement simulator
+    auto gen = [&lbf, &L](){
+          return lbf(L);
+      };
+
+    generate(vals.begin(), vals.end(), gen); // calculate r_i
+    vector<double> val2s(vals);              // (r_i)^2
+    transform(val2s.begin(), val2s.end(), val2s.begin(), [](double & a){
+        return pow(a, 2);
+    });
+
+    // calculate and write to file cumulative average, statistical uncertainty
+    double sum_val, sum_val2;
+    for (unsigned int i = 0; i < nblk; ++i) {
+        sum_val  = accumulate(vals.begin(), vals.begin() + (i + 1), 0.0d) / (i + 1);
+        sum_val2 = accumulate(val2s.begin(), val2s.begin() + (i + 1), 0.0d) / (i + 1);
+        means[i] = sum_val;
+        if (i == 0) {
+            errs[i] = 0;
+        } else {
+            errs[i] = sqrt((sum_val2 - pow(sum_val, 2)) / i);
+        }
+
+        if (ofs.is_open()) {
+            ofs << means[i] << "," << errs[i] << endl;
+        } else { cerr << "ERROR: Unable to open " + of1 << endl; }
+    }
 } // blockingMethod
 
 /****************************************************************

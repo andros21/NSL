@@ -17,6 +17,7 @@
 #include <numeric>
 #include <iterator>
 #include <map>
+#include <functional>
 
 using namespace std;
 
@@ -72,7 +73,10 @@ getSine(Random & rnd, unsigned int size);
 void
 writeVector(vector<double> & vct, string ofile = "rand");
 void
-blockingMethod(vector<double> & vct, double mean_teor, unsigned int nblk, string oname = "");
+blockingMethod_old(vector<double> & vct, double mean_teor, unsigned int nblk, string oname = "");
+void
+blockingMethod(function<double(unsigned int)> lbf, unsigned int nthrow, unsigned int nblk,
+  string oname = "");
 
 #endif // ifndef __Random__
 
