@@ -54,6 +54,13 @@ public:
     Sine();
     double
     Cosine();
+    double
+    HitMiss1d(function<double(double)> pdf, double pdfM, double a = 1., double b = 1.);
+    double
+    Rannyuf1d(function<double(double)> f1, double a = 0., double b = 1.);
+    double
+    Rannyuf1d(function<double(double)> f1, function<double(double)> pdf, double pdfM = 0., double a = 0.,
+      double b = 1.);
 };
 
 vector<double>
@@ -70,6 +77,13 @@ vector<double>
 getCosine(Random & rnd, unsigned int size);
 vector<double>
 getSine(Random & rnd, unsigned int size);
+vector<double>
+getHitMiss1d(Random & rnd, unsigned int size, function<double(double)> pdf, double pdfM, double a = 0., double b = 1.);
+vector<double>
+getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, double a = 0., double b = 1.);
+vector<double>
+getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, function<double(double)> pdf, double pdfM,
+  double a = 0., double b = 1.);
 void
 writeVector(vector<double> & vct, string ofile = "rand");
 void

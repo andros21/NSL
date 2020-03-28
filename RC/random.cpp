@@ -150,6 +150,34 @@ Random :: Sine()
     return sqrt(1. - pow(this->Cosine(), 2));
 }
 
+// Hit or Miss method 1-dim function
+double
+Random :: HitMiss1d(function<double(double)> pdf, double pdfM, double a, double b)
+{
+    pair<double, double> pt;
+
+    do {
+        pt.first  = this->Rannyu(a, b);
+        pt.second = pdf(pt.first);
+    } while (this->Rannyu() > pt.second / pdfM);
+
+    return pt.first;
+}
+
+// Return f1(random_unif(a,b))
+double
+Random :: Rannyuf1d(function<double(double)> f1, double a, double b)
+{
+    return f1(this->Rannyu(a, b));
+}
+
+// Return f1(random(a,b)) distributed as pdf using HitMiss1d
+double
+Random :: Rannyuf1d(function<double(double)> f1, function<double(double)> pdf, double pdfM, double a, double b)
+{
+    return f1(this->HitMiss1d(pdf, pdfM, a, b));
+}
+
 // get random vector of _size = size, distributed unif [0,1]
 vector<double>
 getRannyu(Random & rnd, unsigned int size)
@@ -246,6 +274,52 @@ getSine(Random & rnd, unsigned int size)
 {
     auto gen = [&rnd](){
           return rnd.Sine();
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size, distributed as _pdf inside [a,b]
+vector<double>
+getHitMiss1d(Random & rnd, unsigned int size, function<double(double)> pdf, double pdfM, double a, double b)
+{
+    auto gen = [&rnd, &a, &b, &pdf, &pdfM](){
+          return rnd.HitMiss1d(pdf, pdfM, a, b);
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size, _f1(random(a,b))
+vector<double>
+getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, double a, double b)
+{
+    auto gen = [&rnd, &a, &b, &f1](){
+          return rnd.Rannyuf1d(f1, a, b);
+      };
+
+    vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+// get random vector of _size = size, _f1(random(a,b)) distributed as pdf using HitMiss1d
+vector<double>
+getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, function<double(double)> pdf, double pdfM,
+  double a, double b)
+{
+    auto gen = [&rnd, &a, &b, &f1, &pdf, &pdfM](){
+          return rnd.Rannyuf1d(f1, pdf, pdfM, a, b);
       };
 
     vector<double> v(size);
