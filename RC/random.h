@@ -59,7 +59,7 @@ public:
     double
     Rannyuf1d(function<double(double)> f1, double a = 0., double b = 1.);
     double
-    Rannyuf1d(function<double(double)> f1, function<double(double)> pdf, double pdfM = 0., double a = 0.,
+    Rannyuf1d(function<double(double)> f1, function<double(double)> pdf, double pdfM, double a = 0.,
       double b = 1.);
 };
 
