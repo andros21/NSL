@@ -17,6 +17,7 @@
 #include <numeric>
 #include <iterator>
 #include <map>
+#include <set>
 #include <functional>
 
 using namespace std;
@@ -61,6 +62,8 @@ public:
     double
     Rannyuf1d(function<double(double)> f1, function<double(double)> pdf, double pdfM, double a = 0.,
       double b = 1.);
+    int
+    RannyuDiscrete(int a = 0, int b = 0);
 };
 
 vector<double>
@@ -84,6 +87,8 @@ getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, doubl
 vector<double>
 getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, function<double(double)> pdf, double pdfM,
   double a = 0., double b = 1.);
+vector<int>
+getRannyuDiscrete(Random &rnd, unsigned int size, int a = 0, int b = 1);
 void
 writeVector(vector<double> & vct, string ofile = "rand");
 void

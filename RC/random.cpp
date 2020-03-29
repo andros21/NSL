@@ -178,6 +178,31 @@ Random :: Rannyuf1d(function<double(double)> f1, function<double(double)> pdf, d
     return f1(this->HitMiss1d(pdf, pdfM, a, b));
 }
 
+// Return random discrete number from [a,b]
+int
+Random :: RannyuDiscrete(int a, int b)
+{
+    if (a < 0 or b < 0 or b < a) {
+        cerr << "RannyuDiscrete error parameters" << endl;
+    }
+
+    set<double> intvs;
+    int nintv = (b - a + 1);
+
+    intvs.insert(0.);
+    intvs.insert(1.);
+
+    for (auto i = 1; i < nintv; ++i) {
+        intvs.insert(0. + i * 1. / nintv);
+    }
+
+    auto rr = this->Rannyu();
+    intvs.insert(rr);
+    auto it = find(intvs.begin(), intvs.end(), rr);
+
+    return (int) distance(intvs.begin(), it) - 1 + a;
+}
+
 // get random vector of _size = size, distributed unif [0,1]
 vector<double>
 getRannyu(Random & rnd, unsigned int size)
@@ -307,6 +332,20 @@ getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, doubl
       };
 
     vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+vector<int>
+getRannyuDiscrete(Random & rnd, unsigned int size, int a, int b)
+{
+    auto gen = [&rnd, &a, &b](){
+          return rnd.RannyuDiscrete(a, b);
+      };
+
+    vector<int> v(size);
 
     generate(v.begin(), v.end(), gen);
 
