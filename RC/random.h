@@ -46,7 +46,7 @@ public:
     double
     Rannyu(double min, double max);
     double
-    Gauss(double mean, double sigma);
+    Gauss(double mean = 0., double sigma = 1.);
     double
     Exp(double lambda);
     double
