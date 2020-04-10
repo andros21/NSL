@@ -163,6 +163,8 @@ main(int argc, char * argv[])
     //
     // writeVector(CRW_mean, "CRW_mean"); // Write CRW mean
     // writeVector(CRW_dev, "CRW_dev");   // Write CRW dev
+
+    return 0;
 } // main
 
 /****************************************************************
