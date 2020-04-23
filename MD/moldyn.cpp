@@ -100,22 +100,14 @@ MolDyn :: Restart()
     conf_file = "ro-" + _state + ".tsv";
     this->setPosOldFromFile(conf_file);
 
-    // Iterate until a fix precision is reach or until fix recursion limit is reached
-    double K, T, delta;
-    for (auto i = 0; i < 1000; ++i) {
-        this->Move();
-        K     = 0.5 * this->getNormVel() / (double) _npart;
-        T     = (2.0 / (double) _ndim) * K;
-        delta = abs(T - _temp);
-        // cout << delta << endl;
-        if (delta < 2e-4) {
-            break;
-        } else {
-            this->setVelReFactor();
-            this->setPosOldFromVel();
-        }
+    // Iterate 7 times the restart -> simulation(1000)
+    for (auto i = 0; i < 7; ++i) {
+        this->Simulate(1000);
+        this->setVelReFactor();
+        this->setPosOldFromVel();
     }
 
+    // set current meausure
     this->Measure();
 }
 
@@ -463,7 +455,7 @@ MolDyn :: blockingMethod(unsigned int nblk)
     map<char, vector<double> > th;
     string vars(this->getAvailableVar());
 
-    cout << this->getMeasure('T') << endl;
+    // cout << this->getMeasure('T') << endl;
     for (auto i = 1; i <= _nstep; ++i) {
         this->Move();
         this->Measure();
