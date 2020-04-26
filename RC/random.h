@@ -64,6 +64,9 @@ public:
       double b = 1.);
     int
     RannyuDiscrete(int a = 0, int b = 0);
+    vector<double>
+    Metropolis3d(function<double(vector<double>)> pdf, function<vector<double>(vector<double>)> t1,
+      vector<double> pt = { 0., 0., 0. });
 };
 
 vector<double>
@@ -89,6 +92,9 @@ getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, funct
   double a = 0., double b = 1.);
 vector<int>
 getRannyuDiscrete(Random &rnd, unsigned int size, int a = 0, int b = 1);
+vector<vector<double> >
+getMetropolis3d(Random &rnd, unsigned int size, function<double(vector<double>)> pdf,
+  function<vector<double>(vector<double>)> t1, vector<double> pt = { 0., 0., 0. });
 void
 writeVector(vector<double> & vct, string ofile = "rand");
 void

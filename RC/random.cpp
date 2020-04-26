@@ -203,6 +203,26 @@ Random :: RannyuDiscrete(int a, int b)
     return (int) distance(intvs.begin(), it) - 1 + a;
 }
 
+vector<double>
+Random :: Metropolis3d(function<double(vector<double>)> pdf, function<vector<double>(vector<double>)> t1,
+  vector<double> pt)
+{
+    double alpha, rr;
+    vector<double> ptn;
+
+    while (true) {
+        ptn = t1(pt);
+
+        alpha = min(1., pdf(ptn) / pdf(pt));
+        rr    = this->Rannyu();
+
+        if (rr <= alpha) /*cout << 1 << endl;*/ break;
+        // cout << 0 << endl;
+    }
+
+    return ptn;
+}
+
 // get random vector of _size = size, distributed unif [0,1]
 vector<double>
 getRannyu(Random & rnd, unsigned int size)
@@ -362,6 +382,25 @@ getRannyuf1d(Random & rnd, unsigned int size, function<double(double)> f1, funct
       };
 
     vector<double> v(size);
+
+    generate(v.begin(), v.end(), gen);
+
+    return v;
+}
+
+vector<vector<double> >
+getMetropolis3d(Random &rnd, unsigned int size, function<double(vector<double>)> pdf,
+  function<vector<double>(vector<double>)> t1,
+  vector<double> pt)
+{
+    auto pta = pt;
+
+    auto gen = [&rnd, &pdf, &t1, &pta](){
+          pta = rnd.Metropolis3d(pdf, t1, pta);
+          return pta;
+      };
+
+    vector<vector<double> > v(size);
 
     generate(v.begin(), v.end(), gen);
 
