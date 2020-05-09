@@ -26,15 +26,15 @@ using namespace std;
 
 class MolDyn {
 private:
-    string _state;                                  // state of matter
-    unsigned int _npart, _ndim;                     // particle number, dimension number
-    double _energy, _temp, _vol, _rho, _box, _rcut; // thermodynamical state
-    int _nstep, _seed;                              // simulation variable
-    double _delta, _pprint, _psave;                 // simulation variable
-    vector<vector<double> > _r;                     // positional configuration
-    vector<vector<double> > _ro;                    // positional configuration step before
-    vector<vector<double> > _v;                     // velocity configuration
-    map<char, double> _th;                          // thermodynamical variable results
+    string _state;                         // state of matter
+    unsigned int _npart, _ndim;            // particle number, dimension number
+    double _temp, _vol, _rho, _box, _rcut; // thermodynamical state
+    int _nstep, _seed;                     // simulation variable
+    double _delta, _pprint, _psave;        // simulation variable
+    vector<vector<double> > _r;            // positional configuration
+    vector<vector<double> > _ro;           // positional configuration step before
+    vector<vector<double> > _v;            // velocity configuration
+    map<char, double> _th;                 // thermodynamical variable results
 
 public:
     MolDyn(string state = "solid", bool restart = false, unsigned int ndim = 3);

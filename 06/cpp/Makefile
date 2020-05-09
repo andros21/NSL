@@ -22,7 +22,7 @@ i1d.o : $(I1D_H) $(I1D_C)
 random.o : $(CLASS_H) $(CLASS_C)
 	cd $(CLASS_PATH); $(CC) -c random.cpp -o random.o $(CFLAGS)
 clean :
-	clean.local clean.class clean.i1d clean.home clean.xyz
+	clean.local clean.class clean.i1d clean.home
 clean.local :
 	rm -f *.o *.gch
 clean.class :
@@ -31,5 +31,3 @@ clean.i1d :
 	cd $(I1D_PATH); rm -f *.o *.gch
 clean.home :
 	cd ../../; rm -f *.o *.gch
-clean.out:
-	cd ../out; rm -f *.csv
