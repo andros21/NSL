@@ -14,8 +14,8 @@ func.o : func.h func.cpp
 	$(CC) -c func.cpp -o func.o $(CFLAGS)
 random.o : $(CLASS_H) $(CLASS_C)
 	cd $(CLASS_PATH); $(CC) -c random.cpp -o random.o $(CFLAGS)
-clean :
-	clean.local clean.class clean.home
+clean : clean.local clean.class clean.home
+	
 clean.local :
 	rm -f *.o *.gch
 clean.class :

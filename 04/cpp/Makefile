@@ -21,8 +21,8 @@ random.o : $(CLASS_H) $(CLASS_C)
 	cd $(CLASS_PATH); $(CC) -c random.cpp -o random.o $(CFLAGS)
 moldyn.o : $(MD_H) $(MD_C)
 	cd $(MD_PATH); $(CC) -c moldyn.cpp -o moldyn.o $(CFLAGS)
-clean :
-	clean.local clean.class clean.moldyn clean.home clean.xyz
+clean : clean.local clean.class clean.moldyn clean.home clean.xyz
+	
 clean.local :
 	rm -f *.o *.gch
 clean.xyz :

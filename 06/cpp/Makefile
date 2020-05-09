@@ -21,8 +21,8 @@ i1d.o : $(I1D_H) $(I1D_C)
 	cd $(I1D_PATH); $(CC) -c i1d.cpp -o i1d.o $(CFLAGS)
 random.o : $(CLASS_H) $(CLASS_C)
 	cd $(CLASS_PATH); $(CC) -c random.cpp -o random.o $(CFLAGS)
-clean :
-	clean.local clean.class clean.i1d clean.home
+clean : clean.local clean.class clean.i1d clean.home
+	
 clean.local :
 	rm -f *.o *.gch
 clean.class :
