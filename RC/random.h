@@ -19,6 +19,7 @@
 #include <map>
 #include <set>
 #include <functional>
+#include <iomanip>
 
 using namespace std;
 
@@ -29,6 +30,7 @@ using namespace std;
 class Random {
 private:
     int m1, m2, m3, m4, l1, l2, l3, l4, n1, n2, n3, n4;
+    unsigned int Macpt, Mttot;
 
 protected:
 
@@ -67,6 +69,12 @@ public:
     vector<double>
     Metropolis3d(function<double(vector<double>)> pdf, function<vector<double>(vector<double>)> t1,
       vector<double> pt = { 0., 0., 0. });
+    void
+    resetMetroRatio();
+    double
+    getMetroRatio();
+    void
+    coutMetroRatio();
 };
 
 vector<double>

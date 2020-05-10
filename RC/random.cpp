@@ -14,7 +14,7 @@ using namespace std;
 
 static string outPath = "../out/";
 
-Random :: Random(){ }
+Random :: Random() : Macpt(0), Mttot(0){ }
 
 Random :: ~Random(){ }
 
@@ -210,17 +210,40 @@ Random :: Metropolis3d(function<double(vector<double>)> pdf, function<vector<dou
     double alpha, rr;
     vector<double> ptn;
 
-    while (true) {
-        ptn = t1(pt);
+    ptn = t1(pt);
 
-        alpha = min(1., pdf(ptn) / pdf(pt));
-        rr    = this->Rannyu();
+    alpha = min(1., pdf(ptn) / pdf(pt));
+    rr    = this->Rannyu();
 
-        if (rr <= alpha) /*cout << 1 << endl;*/ break;
-        // cout << 0 << endl;
+    Mttot++;
+    if (rr <= alpha) {
+        Macpt++;
+        return ptn;
+    } else {
+        return pt;
     }
+}
 
-    return ptn;
+double
+Random :: getMetroRatio()
+{
+    if (Mttot == 0) {
+        return 0.;
+    }
+    return (double) Macpt / Mttot;
+}
+
+void
+Random :: coutMetroRatio()
+{
+    cout << "\rMetropolis Ratio: " << round(this->getMetroRatio() * 100) << " " << flush;
+}
+
+void
+Random :: resetMetroRatio()
+{
+    Macpt = 0;
+    Mttot = 0;
 }
 
 // get random vector of _size = size, distributed unif [0,1]
@@ -587,6 +610,7 @@ blockingMethod(function<double(unsigned int)> lbf, unsigned int nthrow, unsigned
             ofs << means[i] << "," << errs[i] << endl;
         } else { cerr << "ERROR: Unable to open " + of1 << endl; }
     }
+    ofs.close();
 } // blockingMethod
 
 /****************************************************************
