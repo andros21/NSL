@@ -9,7 +9,7 @@
  *****************************************************************/
 
 #include "../../RC/random.h"
-// #include "func.h"
+#include "func.h"
 
 using namespace std;
 
