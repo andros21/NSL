@@ -9,7 +9,7 @@
  *****************************************************************/
 
 #include "../../RC/random.h"
-#include "func.h"
+// #include "func.h"
 
 using namespace std;
 
@@ -27,7 +27,7 @@ main(int argc, char * argv[])
     double a0(0.0529); // Bohr radius [nm]
 
     vector<double> pt_100 = { 0., 0., 0. }; // starting point for eign_100
-    double var_100(a0 * 0.4);               // parameter for pt_100 and eign_100
+    double var_100(a0 * 1.2);               // parameter for pt_100 and eign_100
     ;                                       // to reach 50% empirical rule
 
     // 100 eigenfunction take input a cartesian point cc=(x,y,z)
@@ -40,7 +40,7 @@ main(int argc, char * argv[])
       };
 
     vector<double> pt_210 = { 0., 0., 0. }; // starting point for eign_210
-    double var_210(a0 * 1.2);               // parameter for pt_210 and eign_210
+    double var_210(a0 * 3);                 // parameter for pt_210 and eign_210
     ;                                       // to reach 50% empirical rule
 
     // 210 eigenfunction take input a cartesian point cc=(x,y,z)
@@ -70,6 +70,7 @@ main(int argc, char * argv[])
           vector<vector<double> > vct(L);
 
           auto gen = [&rnd, &eign_100, &t1_unif_100, &pt_100](){
+                // rnd.coutMetroRatio();
                 pt_100 = rnd.Metropolis3d(eign_100, t1_unif_100, pt_100);
 
                 return pt_100;
@@ -89,7 +90,8 @@ main(int argc, char * argv[])
       };
 
 
-    // blockingMethod(eign_100_blk, 1e6, 100, "r-100"); // simulation <r>_{100}
+    blockingMethod(eign_100_blk, 1e5, 100, "r-100"); // simulation <r>_{100}
+    rnd.resetMetroRatio();
 
     /* 210 */
 
@@ -108,6 +110,7 @@ main(int argc, char * argv[])
           vector<vector<double> > vct(L);
 
           auto gen = [&rnd, &eign_210, &t1_unif_210, &pt_210](){
+                // rnd.coutMetroRatio();
                 pt_210 = rnd.Metropolis3d(eign_210, t1_unif_210, pt_210);
 
                 return pt_210;
@@ -127,18 +130,19 @@ main(int argc, char * argv[])
       };
 
 
-    // blockingMethod(eign_210_blk, 1e6, 100, "r-210"); // simulation <r>_{210}
+    blockingMethod(eign_210_blk, 1e5, 100, "r-210"); // simulation <r>_{210}
+    rnd.resetMetroRatio();
 
     /***************************
     *  Exercise 05.1.2
     ***************************/
 
     pt_100  = { 0., 0., 0. }; // starting point for eign_100
-    var_100 = a0 * 0.1;       // parameter for pt_100 and eign_100
+    var_100 = a0 * 0.77;      // parameter for pt_100 and eign_100
     ;                         // to reach 50% empirical rule
 
     pt_210  = { 0., 0., 0. }; // starting point for eign_210
-    var_210 = a0 * 0.3;       // parameter for pt_210 and eign_210
+    var_210 = a0 * 2;         // parameter for pt_210 and eign_210
     ;                         // to reach 50% empirical rule
 
     /* 100 */
@@ -158,6 +162,7 @@ main(int argc, char * argv[])
           vector<vector<double> > vct(L);
 
           auto gen = [&rnd, &eign_100, &t1_gaus_100, &pt_100](){
+                // rnd.coutMetroRatio();
                 pt_100 = rnd.Metropolis3d(eign_100, t1_gaus_100, pt_100);
 
                 return pt_100;
@@ -176,7 +181,8 @@ main(int argc, char * argv[])
           return accumulate(vct.begin(), vct.end(), 0.0d, acc) / L;
       };
 
-    // blockingMethod(eign_gaus_100_blk, 1e6, 100, "r-g-100"); // simulation <r>_{100}
+    blockingMethod(eign_gaus_100_blk, 1e5, 100, "r-g-100"); // simulation <r>_{100}
+    rnd.resetMetroRatio();
 
     /* 210 */
 
@@ -195,6 +201,7 @@ main(int argc, char * argv[])
           vector<vector<double> > vct(L);
 
           auto gen = [&rnd, &eign_210, &t1_gaus_210, &pt_210](){
+                // rnd.coutMetroRatio();
                 pt_210 = rnd.Metropolis3d(eign_210, t1_gaus_210, pt_210);
 
                 return pt_210;
@@ -213,10 +220,8 @@ main(int argc, char * argv[])
           return accumulate(vct.begin(), vct.end(), 0.0d, acc) / L;
       };
 
-    blockingMethod(eign_gaus_210_blk, 1e6, 100, "r-g-210"); // simulation <r>_{210}
-
-
-    // auto appo = getMetropolis3d(rnd, 100, eign_210, t1_unif_210, pt_210);
+    blockingMethod(eign_gaus_210_blk, 1e5, 100, "r-g-210"); // simulation <r>_{210}
+    rnd.resetMetroRatio();
 
     return 0;
 } // main
