@@ -6,7 +6,7 @@
 100
 500000
 0.1
-1
+1e-4
 
   ReadInput >> temp;
   ReadInput >> npart;
