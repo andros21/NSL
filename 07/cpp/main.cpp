@@ -25,25 +25,26 @@ main(int argc, char * argv[])
     McMd mdl("liquid");
     McMd mdg("gas");
 
-    vector<McMd> vmd = { mds, mdl, mdg };
+    vector<McMd> vmd = { mdl, mdl, mdg };
 
     for (auto & md : vmd) {
-        md.Simulate(5e4, false, true, true); // Initial simulation 1000 steps, random velocities
+        md.Simulate(5e4, false, true, true); // Initial simulation
         md.resetMetroRatio();                // Reset Metropolis ratio
         md.End();                            // Write final configuration to files
         cout << endl;
-        // md.Restart();      // Restart using these configuration files,
-        ; // reaching equilibrium with temperature
-        ; // to avoid initial oscillations
+        md.Restart(); // Restart using these configuration files,
+        ;             // reaching equilibrium with temperature
+        ;             // to avoid initial oscillations
     }
 
     /***************************
     *  Exercise 07.4
     ***************************/
 
-    // for (auto & md : vmd) {
-    //     md.blockingMethod(100); // BlockingMethod with nblk 100
-    // }
+    for (auto & md : vmd) {
+        md.blockingMethod(500, false, true); // BlockingMethod with nblk 500
+        ;                                    // values per block 1000
+    }
 
     return 0;
 } // main
