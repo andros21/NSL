@@ -139,7 +139,7 @@ McMd :: getPbc(double r)
 vector<double>
 McMd :: getRadiusRange()
 {
-    vector<double> vct(_nbin);
+    vector<double> vct(_nbin + 1);
 
     for (double i = 0.; i <= _nbin; ++i)
         vct[i] = (i * _box * 0.5 / (double) _nbin);
@@ -249,13 +249,13 @@ McMd :: Measure(bool corl)
                 // update of the histogram of g(r)
                 for (int n = 0; n < _nbin; ++n)
                     if (dr >= _rrange[n] && dr < _rrange[n + 1])
-                        gg[n] += 1;
+                        gg[n] += 2;
 
                 // normalize histogram
                 for (int n = 0; n < _nbin; ++n)
                     // valide only in 3 dimension
                     gg[n] /= (4. * M_PI) / 3 * _npart * _rho
-                      * (pow(_rrange[n] + _rrange[n + 1], 3) - pow(_rrange[n], 3));
+                      * (pow(_rrange[n + 1], 3) - pow(_rrange[n], 3));
             }
 
             if (dr < _rcut) {
@@ -363,7 +363,7 @@ McMd :: writeVctToFile(vector<vector<double> > vct, int blk, bool pbc)
 }
 
 void
-McMd :: blockingMethod(unsigned int nblk, bool file, bool corl)
+McMd :: blockingMethod(unsigned int nblk, bool file, bool corl, bool bth)
 {
     if (_nstep % nblk != 0) {
         cerr << "ERROR: Throw size not divisible by block size exactly" << endl;
@@ -375,67 +375,70 @@ McMd :: blockingMethod(unsigned int nblk, bool file, bool corl)
 
     for (auto i = 1; i <= _nstep; ++i) {
         this->Move();
-        this->Measure();
-        for (auto ch : vars)
-            th[ch].push_back(this->getMeasure(ch));
+        this->Measure(corl);
+        if (bth) {
+            for (auto ch : vars)
+                th[ch].push_back(this->getMeasure(ch));
+        }
         if (corl) {
             for (int n = 0; n < _nbin; ++n)
                 gg[n].push_back(_gg[n]);
         }
     }
 
-    for (auto ch : vars) {
-        string of1("-blk.csv");
-        of1 = _state + of1;
-        of1 = "-" + of1;
-        of1 = ch + of1;
-        ofstream ofs(outPath + of1);
-
-        unsigned int L = _nstep / nblk; // generation per block
-        vector<double> vals(nblk);      // r_i
-
-        for (unsigned int i = 0; i < nblk; ++i)
-            vals[i] = (double) accumulate(th[ch].begin() + i * L, th[ch].begin() + (i + 1) * L, 0.0d) / L;
-
-        vector<double> means(nblk); // cumulative average
-        vector<double> errs(nblk);  // statistical uncertainty
-
-        vector<double> val2s(vals); // (r_i)^2
-        transform(val2s.begin(), val2s.end(), val2s.begin(), [](double & a){
-            return pow(a, 2);
-        });
-
-        // calculate and write to file cumulative average, statistical uncertainty
-        double sum_val, sum_val2;
-        for (unsigned int i = 0; i < nblk; ++i) {
-            sum_val  = accumulate(vals.begin(), vals.begin() + (i + 1), 0.0d) / (i + 1);
-            sum_val2 = accumulate(val2s.begin(), val2s.begin() + (i + 1), 0.0d) / (i + 1);
-            means[i] = sum_val;
-            if (i == 0) {
-                errs[i] = 0;
-            } else {
-                errs[i] = sqrt((sum_val2 - pow(sum_val, 2)) / i);
-            }
-
-            if (ofs.is_open()) {
-                ofs << means[i] << "," << errs[i] << endl;
-            } else { cerr << "ERROR: Unable to open " + of1 << endl; }
-        }
-        ofs.close();
-        if (file) {
-            string of2 = "-" + _state;
-            of2 = ch + of2;
-            writeVector(th[ch], of2);
-        }
-    }
-    if (corl) {
-        for (int n = 0; n < _nbin; ++n) {
+    if (bth) {
+        for (auto ch : vars) {
             string of1("-blk.csv");
             of1 = _state + of1;
             of1 = "-" + of1;
-            of1 = "gr" + of1;
-            ofstream ofs(outPath + of1, ios::app);
+            of1 = ch + of1;
+            ofstream ofs(outPath + of1);
 
+            unsigned int L = _nstep / nblk; // generation per block
+            vector<double> vals(nblk);      // r_i
+
+            for (unsigned int i = 0; i < nblk; ++i)
+                vals[i] = (double) accumulate(th[ch].begin() + i * L, th[ch].begin() + (i + 1) * L, 0.0d) / L;
+
+            vector<double> means(nblk); // cumulative average
+            vector<double> errs(nblk);  // statistical uncertainty
+
+            vector<double> val2s(vals); // (r_i)^2
+            transform(val2s.begin(), val2s.end(), val2s.begin(), [](double & a){
+                return pow(a, 2);
+            });
+
+            // calculate and write to file cumulative average, statistical uncertainty
+            double sum_val, sum_val2;
+            for (unsigned int i = 0; i < nblk; ++i) {
+                sum_val  = accumulate(vals.begin(), vals.begin() + (i + 1), 0.0d) / (i + 1);
+                sum_val2 = accumulate(val2s.begin(), val2s.begin() + (i + 1), 0.0d) / (i + 1);
+                means[i] = sum_val;
+                if (i == 0) {
+                    errs[i] = 0;
+                } else {
+                    errs[i] = sqrt((sum_val2 - pow(sum_val, 2)) / i);
+                }
+
+                if (ofs.is_open()) {
+                    ofs << means[i] << "," << errs[i] << endl;
+                } else { cerr << "ERROR: Unable to open " + of1 << endl; }
+            }
+            ofs.close();
+            if (file) {
+                string of2 = "-" + _state;
+                of2 = ch + of2;
+                writeVector(th[ch], of2);
+            }
+        }
+    }
+    if (corl) {
+        string of1("-blk.csv");
+        of1 = _state + of1;
+        of1 = "-" + of1;
+        of1 = "gr" + of1;
+        for (int n = 0; n < _nbin; ++n) {
+            ofstream ofs(outPath + of1, ios::app);
             unsigned int L = _nstep / nblk; // generation per block
             vector<double> vals(nblk);      // r_i
 
