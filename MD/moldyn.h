@@ -29,12 +29,14 @@ private:
     string _state;                         // state of matter
     unsigned int _npart, _ndim;            // particle number, dimension number
     double _temp, _vol, _rho, _box, _rcut; // thermodynamical state
-    int _nstep, _seed;                     // simulation variable
+    int _nstep, _seed, _nbin;              // simulation variable
     double _delta, _pprint, _psave;        // simulation variable
+    vector<double> _rrange;                // simulation variable
     vector<vector<double> > _r;            // positional configuration
     vector<vector<double> > _ro;           // positional configuration step before
     vector<vector<double> > _v;            // velocity configuration
     map<char, double> _th;                 // thermodynamical variable results
+    vector<double> _gg;                    // correlation variable
 
 public:
     MolDyn(string state = "solid", bool restart = false, unsigned int ndim = 3);
@@ -64,15 +66,17 @@ public:
     double
     getNormVel();
     double
-    getPotential();
+    getPotential(bool corl = false);
+    vector<double>
+    getRadiusRange();
     double
     getPbc(double r);
     void
     Move();
     void
-    Measure();
+    Measure(bool corl = false);
     void
-    Simulate(int nstep = 0, bool verbose = false, bool result = false, bool xyz = false);
+    Simulate(int nstep = 0, bool corl = false, bool verbose = false, bool result = false, bool xyz = false);
     string
     getAvailableVar();
     double
@@ -84,7 +88,7 @@ public:
     void
     writeVctToFile(vector<vector<double> > vct, int blk, bool pbc = true);
     void
-    blockingMethod(unsigned int nblk);
+    blockingMethod(unsigned int nblk, bool corl = false, bool bth = true);
 };
 
 

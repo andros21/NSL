@@ -28,11 +28,15 @@ MolDyn :: MolDyn(string state, bool restart, unsigned int ndim) : _state(state),
         _box = pow(_vol, 1.0 / _ndim);
         ReadInput >> _rcut;
         ReadInput >> _delta;
+        ReadInput >> _nbin;
         ReadInput >> _nstep;
         ReadInput >> _pprint;
         ReadInput >> _psave;
     } else { cerr << "ERROR: Unable to open " + input_file << endl; }
     ReadInput.close();
+
+    // Get radius range
+    _rrange = this->getRadiusRange();
 
     // Decide to restart from previous simulation or randomize
     if (restart) {
@@ -240,6 +244,17 @@ MolDyn :: getNormVel()
     return sum;
 }
 
+vector<double>
+MolDyn :: getRadiusRange()
+{
+    vector<double> vct(_nbin + 1);
+
+    for (double i = 0.; i <= _nbin; ++i)
+        vct[i] = (i * _box * 0.5 / (double) _nbin);
+
+    return vct;
+}
+
 double
 MolDyn :: getPbc(double r)
 {
@@ -294,16 +309,16 @@ MolDyn :: Move()
 
 // Make a meausure
 void
-MolDyn :: Measure()
+MolDyn :: Measure(bool corl)
 {
     _th['K'] = 0.5 * this->getNormVel() / (double) _npart; // Kinetic energy per particle
     _th['T'] = (2.0 / (double) _ndim) * _th['K'];          // Temperature
-    _th['V'] = this->getPotential() / (double) _npart;     // Potential energy per particle
+    _th['V'] = this->getPotential(corl) / (double) _npart; // Potential energy per particle
     _th['E'] = _th['K'] + _th['V'];                        // Total energy per paticle
 }
 
 void
-MolDyn :: Simulate(int nstep, bool verbose, bool result, bool xyz)
+MolDyn :: Simulate(int nstep, bool corl, bool verbose, bool result, bool xyz)
 {
     int nconf(1);
 
@@ -313,7 +328,7 @@ MolDyn :: Simulate(int nstep, bool verbose, bool result, bool xyz)
         this->Move();
         if ((istep % (int) (_pprint * nstep) == 0) && verbose) cout << "Number of time-steps: " << istep << endl;
         if ((istep % (int) (_psave * nstep) == 0) && result) {
-            this->Measure();
+            this->Measure(corl);
             this->getMeasureToFile();
             if (xyz) this->writeVctToFile(_r, nconf);
             ++nconf;
@@ -393,11 +408,13 @@ MolDyn::Force()
 
 // Compute potential energy
 double
-MolDyn::getPotential()
+MolDyn::getPotential(bool corl)
 {
     double vv(0.);
     vector<double> dr(_ndim, 0.);
     double sdr;
+    unsigned int cf;
+    vector<double> gg(_nbin, 0.0d);
 
     for (unsigned int j = 0; j < _npart - 1; ++j) {
         for (unsigned int k = j + 1; k < _npart; ++k) {
@@ -406,9 +423,18 @@ MolDyn::getPotential()
             sdr = sqrt(accumulate(dr.begin(), dr.end(), 0.0d, [](double &a, double &b){
                 return a + pow(b, 2);
             }));
+            if (corl) {
+                // update histo of g(r) [not normalized]
+                if (sdr < _box * 0.5) {
+                    cf      = (unsigned int) ((sdr * _nbin) / (_box * 0.5));
+                    gg[cf] += 2;
+                }
+            }
             if (sdr < _rcut) vv += 4.0 / pow(sdr, 12) - 4.0 / pow(sdr, 6);
         }
     }
+
+    if (corl) _gg = gg;
 
     return vv;
 }
@@ -446,58 +472,111 @@ MolDyn :: writeVctToFile(vector<vector<double> > vct, int blk, bool pbc)
 }
 
 void
-MolDyn :: blockingMethod(unsigned int nblk)
+MolDyn :: blockingMethod(unsigned int nblk, bool corl, bool bth)
 {
     if (_nstep % nblk != 0) {
         cerr << "ERROR: Throw size not divisible by block size exactly" << endl;
     }
 
     map<char, vector<double> > th;
+    vector<vector<double> > gg(_nbin);
     string vars(this->getAvailableVar());
+    double ggnorm;
 
-    // cout << this->getMeasure('T') << endl;
     for (auto i = 1; i <= _nstep; ++i) {
         this->Move();
         this->Measure();
-        for (auto ch : vars)
-            th[ch].push_back(this->getMeasure(ch));
+        if (bth) {
+            for (auto ch : vars)
+                th[ch].push_back(this->getMeasure(ch));
+        }
+        if (corl) {
+            // load and normalized
+            for (int n = 0; n < _nbin; ++n) {
+                ggnorm = ((4. * M_PI) / 3) * _npart * _rho * (pow(_rrange[n + 1], 3) - pow(_rrange[n], 3));
+                gg[n].push_back(_gg[n] / ggnorm);
+            }
+        }
     }
-    for (auto ch : vars) {
+    if (bth) {
+        for (auto ch : vars) {
+            string of1("-blk.csv");
+            of1 = _state + of1;
+            of1 = "-" + of1;
+            of1 = ch + of1;
+            ofstream ofs(outPath + of1);
+
+            unsigned int L = _nstep / nblk; // generation per block
+            vector<double> vals(nblk);      // r_i
+
+            for (unsigned int i = 0; i < nblk; ++i)
+                vals[i] = (double) accumulate(th[ch].begin() + i * L, th[ch].begin() + (i + 1) * L, 0.0d) / L;
+
+            vector<double> means(nblk); // cumulative average
+            vector<double> errs(nblk);  // statistical uncertainty
+
+            vector<double> val2s(vals); // (r_i)^2
+            transform(val2s.begin(), val2s.end(), val2s.begin(), [](double & a){
+                return pow(a, 2);
+            });
+
+            // calculate and write to file cumulative average, statistical uncertainty
+            double sum_val, sum_val2;
+            for (unsigned int i = 0; i < nblk; ++i) {
+                sum_val  = accumulate(vals.begin(), vals.begin() + (i + 1), 0.0d) / (i + 1);
+                sum_val2 = accumulate(val2s.begin(), val2s.begin() + (i + 1), 0.0d) / (i + 1);
+                means[i] = sum_val;
+                if (i == 0) {
+                    errs[i] = 0;
+                } else {
+                    errs[i] = sqrt((sum_val2 - pow(sum_val, 2)) / i);
+                }
+
+                if (ofs.is_open()) {
+                    ofs << means[i] << "," << errs[i] << endl;
+                } else { cerr << "ERROR: Unable to open " + of1 << endl; }
+            }
+            ofs.close();
+        }
+    }
+    if (corl) {
         string of1("-blk.csv");
         of1 = _state + of1;
         of1 = "-" + of1;
-        of1 = ch + of1;
+        of1 = "gr" + of1;
         ofstream ofs(outPath + of1);
+        for (int n = 0; n < _nbin; ++n) {
+            // ofstream ofs(outPath + of1, ios::app);
+            unsigned int L = _nstep / nblk; // generation per block
+            vector<double> vals(nblk);      // r_i
 
-        unsigned int L = _nstep / nblk; // generation per block
-        vector<double> vals(nblk);      // r_i
+            for (unsigned int i = 0; i < nblk; ++i)
+                vals[i] = (double) accumulate(gg[n].begin() + i * L, gg[n].begin() + (i + 1) * L, 0.0d) / L;
 
-        for (unsigned int i = 0; i < nblk; ++i)
-            vals[i] = (double) accumulate(th[ch].begin() + i * L, th[ch].begin() + (i + 1) * L, 0.0d) / L;
+            vector<double> means(nblk); // cumulative average
+            vector<double> errs(nblk);  // statistical uncertainty
 
-        vector<double> means(nblk); // cumulative average
-        vector<double> errs(nblk);  // statistical uncertainty
+            vector<double> val2s(vals); // (r_i)^2
+            transform(val2s.begin(), val2s.end(), val2s.begin(), [](double & a){
+                return pow(a, 2);
+            });
 
-        vector<double> val2s(vals); // (r_i)^2
-        transform(val2s.begin(), val2s.end(), val2s.begin(), [](double & a){
-            return pow(a, 2);
-        });
-
-        // calculate and write to file cumulative average, statistical uncertainty
-        double sum_val, sum_val2;
-        for (unsigned int i = 0; i < nblk; ++i) {
-            sum_val  = accumulate(vals.begin(), vals.begin() + (i + 1), 0.0d) / (i + 1);
-            sum_val2 = accumulate(val2s.begin(), val2s.begin() + (i + 1), 0.0d) / (i + 1);
-            means[i] = sum_val;
-            if (i == 0) {
-                errs[i] = 0;
-            } else {
-                errs[i] = sqrt((sum_val2 - pow(sum_val, 2)) / i);
+            // calculate and write to file cumulative average, statistical uncertainty
+            double sum_val, sum_val2;
+            for (unsigned int i = 0; i < nblk; ++i) {
+                sum_val  = accumulate(vals.begin(), vals.begin() + (i + 1), 0.0d) / (i + 1);
+                sum_val2 = accumulate(val2s.begin(), val2s.begin() + (i + 1), 0.0d) / (i + 1);
+                means[i] = sum_val;
+                if (i == 0) {
+                    errs[i] = 0;
+                } else {
+                    errs[i] = sqrt((sum_val2 - pow(sum_val, 2)) / i);
+                }
             }
-
             if (ofs.is_open()) {
-                ofs << means[i] << "," << errs[i] << endl;
+                ofs << _rrange[n] << "," << means[nblk - 1] << "," << errs[nblk - 1] << endl;
             } else { cerr << "ERROR: Unable to open " + of1 << endl; }
+            // ofs.close();
         }
         ofs.close();
     }
