@@ -3,7 +3,8 @@
 0.05
 5.0
 0.0005
-10000
+100
+100000
 0.1
 0.01
 
@@ -12,6 +13,7 @@
   ReadInput >> rho;
   ReadInput >> rcut;
   ReadInput >> delta;
+  ReadInput >> bin;
   ReadInput >> nstep;
   ReadInput >> pprint;
   ReadInput >> psave;
