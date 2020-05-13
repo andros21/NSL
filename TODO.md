@@ -5,7 +5,7 @@
 - [ ] Ex01 review Buffon simulation parameters
 - [ ] Ex02 try to map lambda function in func.h func.cpp to clean up main
 - [ ] Ex03 try to map lambda function in func.h func.cpp to clean up main
-- [ ] Ex04 should be rerun, cause low range was chosen
+- [ ] Ex04 should be rerun, only thermo variables g(r) is ok
 - [ ] Ex04 make more clear inside jpn the equilibration part
 - [x] Ex05 add global variable inside RC class to check Metropolis accept/reject ratio
 - [x] Ex05 Modify Metropolis3d while loop error, and check if consistent with results
@@ -15,5 +15,4 @@
 - [ ] Ex06 improve equilibrate loop, checking equilibration using plot
 - [ ] Ex06 inside Metropolis algo and Gibbs algo, modif \_nspin -1 error
 - [ ] Ex06 should be rerun, cause low range and not optimal parameters was chosen
-- [ ] Ex06 separate \*-blk.csv output file of averages from output file with final average blk as function of temperature
 - [ ] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
