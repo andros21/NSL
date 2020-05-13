@@ -485,7 +485,7 @@ MolDyn :: blockingMethod(unsigned int nblk, bool corl, bool bth)
 
     for (auto i = 1; i <= _nstep; ++i) {
         this->Move();
-        this->Measure();
+        this->Measure(corl);
         if (bth) {
             for (auto ch : vars)
                 th[ch].push_back(this->getMeasure(ch));
