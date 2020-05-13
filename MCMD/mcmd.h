@@ -71,7 +71,7 @@ public:
     void
     writeVctToFile(vector<vector<double> > vct, int blk, bool pbc = true);
     void
-    blockingMethod(unsigned int nblk, bool file = false, bool corl = false, bool th = true);
+    blockingMethod(unsigned int nblk, bool file = false, bool corl = false, bool bth = true);
 };
 
 
