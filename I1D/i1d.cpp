@@ -143,9 +143,9 @@ I1D :: Measure()
         xx  += _mu[i];
     }
 
-    // _th['U'] = uu / (double) _nspin;
-    // _th['C'] = pow(1. / _temp, 2) * (cc / (double) _nspin - pow(_th['U'], 2));
-    // _th['X'] = (1. / _temp) * pow(xx, 2) / (double) _nspin;
+    _th['U'] = uu / (double) _nspin;
+    _th['C'] = pow(1. / _temp, 2) * (cc / (double) _nspin - pow(_th['U'], 2));
+    _th['X'] = (1. / _temp) * pow(xx, 2) / (double) _nspin;
     _th['M'] = xx / (double) _nspin;
 }
 
