@@ -231,6 +231,7 @@ McMd :: Measure(bool corl)
     double v(0.);
     double w(0.);
     double dr;
+    unsigned int cf;
     vector<double> dd(_ndim);
     vector<double> gg(_nbin, 0.0d);
 
@@ -246,16 +247,12 @@ McMd :: Measure(bool corl)
                 return a + pow(b, 2);
             }));
             if (corl) {
-                // update of the histogram of g(r)
-                for (int n = 0; n < _nbin; ++n)
-                    if (dr >= _rrange[n] && dr < _rrange[n + 1])
-                        gg[n] += 2;
 
-                // normalize histogram
-                for (int n = 0; n < _nbin; ++n)
-                    // valide only in 3 dimension
-                    gg[n] /= (4. * M_PI) / 3 * _npart * _rho
-                      * (pow(_rrange[n + 1], 3) - pow(_rrange[n], 3));
+		// update histo of g(r) [not normalized]
+		if (dr < _box*0.5) {
+		cf = (unsigned int)((dr*_nbin)/(_box*0.5));
+		gg[cf] += 2;
+		}
             }
 
             if (dr < _rcut) {
@@ -372,6 +369,7 @@ McMd :: blockingMethod(unsigned int nblk, bool file, bool corl, bool bth)
     map<char, vector<double> > th;
     vector<vector<double> > gg(_nbin);
     string vars(this->getAvailableVar());
+    double ggnorm;
 
     for (auto i = 1; i <= _nstep; ++i) {
         this->Move();
@@ -381,8 +379,11 @@ McMd :: blockingMethod(unsigned int nblk, bool file, bool corl, bool bth)
                 th[ch].push_back(this->getMeasure(ch));
         }
         if (corl) {
-            for (int n = 0; n < _nbin; ++n)
-                gg[n].push_back(_gg[n]);
+	    // load and normalized
+            for (int n = 0; n < _nbin; ++n) {
+		ggnorm = ((4. * M_PI) / 3) * _npart * _rho * (pow(_rrange[n + 1], 3) - pow(_rrange[n], 3));
+                gg[n].push_back(_gg[n]/ggnorm);
+	    }
         }
     }
 
@@ -437,8 +438,9 @@ McMd :: blockingMethod(unsigned int nblk, bool file, bool corl, bool bth)
         of1 = _state + of1;
         of1 = "-" + of1;
         of1 = "gr" + of1;
+	ofstream ofs(outPath + of1);
         for (int n = 0; n < _nbin; ++n) {
-            ofstream ofs(outPath + of1, ios::app);
+            //ofstream ofs(outPath + of1, ios::app);
             unsigned int L = _nstep / nblk; // generation per block
             vector<double> vals(nblk);      // r_i
 
@@ -468,8 +470,9 @@ McMd :: blockingMethod(unsigned int nblk, bool file, bool corl, bool bth)
             if (ofs.is_open()) {
                 ofs << _rrange[n] << "," << means[nblk - 1] << "," << errs[nblk - 1] << endl;
             } else { cerr << "ERROR: Unable to open " + of1 << endl; }
-            ofs.close();
+            //ofs.close();
         }
+	ofs.close();
     }
 } // blockingMethod
 
