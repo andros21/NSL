@@ -14,10 +14,6 @@ def blocking(vct, L):
     M = 5e5
     N = int(M/L)
     ave = np.zeros(N)
-    #av2 = np.zeros(N)
-    #sum_prog = np.zeros(N)
-    #su2_prog = np.zeros(N)
-    #err_prog = np.zeros(N)
 
     for i in range(N):
         sum = 0
@@ -25,20 +21,11 @@ def blocking(vct, L):
             k = j+i*L
             sum += vct[k]
         ave[i] = sum/L  # r_i
-        #av2[i] = (ave[i])**2  # (r_i)^2
 
     ave = np.asarray(ave)
 
     avg = np.sum(ave)/N
     err = np.sqrt((np.sum(ave**2)/N - avg**2)/N)
-
-    #for i in range(N):
-    #    for j in range(i+1):
-    #        sum_prog[i] += ave[j]  # SUM_{j=0,i} r_j
-    #        su2_prog[i] += av2[j]  # SUM_{j=0,i} (r_j)^2
-    #    sum_prog[i] /= (i+1)  # Cumulative average
-    #    su2_prog[i] /= (i+1)  # Cumulative square average
-    #    err_prog[i] = error(sum_prog, su2_prog, i)  # Statistical uncertainty
 
     return (avg, err)
 
