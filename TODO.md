@@ -15,4 +15,6 @@
 - [ ] Ex06 improve equilibrate loop, checking equilibration using plot
 - [ ] Ex06 inside Metropolis algo and Gibbs algo, modif \_nspin -1 error
 - [ ] Ex06 should be rerun, cause low range and not optimal parameters was chosen
+- [ ] Ex07 cpp implemantation of autocorrelation Ex07.1.3
+- [ ] Ex07 when all is correct cp raw move 3-4M .out file 5e5 in the out folder
 - [ ] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
