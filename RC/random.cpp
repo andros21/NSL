@@ -203,6 +203,26 @@ Random :: RannyuDiscrete(int a, int b)
     return (int) distance(intvs.begin(), it) - 1 + a;
 }
 
+double
+Random :: Metropolis1d(function<double(double)> pdf, function<double(double)> t1, double pt)
+{
+    double alpha, rr;
+    double ptn;
+
+    ptn = t1(pt);
+
+    alpha = min(1., pdf(ptn) / pdf(pt));
+    rr    = this->Rannyu();
+
+    Mttot++;
+    if (rr <= alpha) {
+        Macpt++;
+        return ptn;
+    } else {
+        return pt;
+    }
+}
+
 vector<double>
 Random :: Metropolis3d(function<double(vector<double>)> pdf, function<vector<double>(vector<double>)> t1,
   vector<double> pt)

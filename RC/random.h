@@ -66,6 +66,8 @@ public:
       double b = 1.);
     int
     RannyuDiscrete(int a = 0, int b = 0);
+    double
+    Metropolis1d(function<double(double)> pdf, function<double(double)> t1, double pt = 0.);
     vector<double>
     Metropolis3d(function<double(vector<double>)> pdf, function<vector<double>(vector<double>)> t1,
       vector<double> pt = { 0., 0., 0. });
