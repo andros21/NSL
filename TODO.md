@@ -18,4 +18,6 @@
 - [ ] Ex07 cpp implementation of autocorrelation Ex07.1.3
 - [ ] Ex07 when all is correct cp raw move 3-4M .out file 5e5 in the out folder
 - [ ] Ex08 Complete Ex 08.3 PIMC/PIGS code
+- [ ] Ex09 Convert \*.mp4 in \*.gif and push
+- [ ] Ex09 Try to improve Ex09.1.2
 - [ ] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
