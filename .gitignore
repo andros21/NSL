@@ -3,3 +3,4 @@ __pycache__
 __init.py__
 .ipynb_checkpoints
 *.x
+*.mp4
