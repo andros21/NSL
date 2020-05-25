@@ -131,8 +131,8 @@ public:
     Tour
     getTour(unsigned int index) const { auto it = next(_tours.begin(), index); return *it; }
 
-    Tour
-    getTour(set<Tour>::iterator it) const { return *it; }
+    // Tour
+    // getTour(set<Tour>::iterator it) const { return *it; }
 
     unsigned int
     getPopulationSize() const { return _tours.size(); }
@@ -159,8 +159,10 @@ public:
     Tour
     tourSelection(const Population& pop);
 
-    Population
-    evolvePopulation(const Population& pop);
+    void
+    evolvePopulation(const Population& pop, unsigned int nIter, string name, bool saveLastConf = true,
+      bool writeBestToFile        = false,
+      bool writeHalfBestAvgToFile = false);
 };
 
 #endif // ifndef __GeneticAlgo__

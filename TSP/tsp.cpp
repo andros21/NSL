@@ -155,10 +155,11 @@ Population :: Population (const Tour& initialTour, unsigned int populationSize)
 void
 Population :: mutate(Random & rnd, double mutationRate)
 {
-    for (auto it = (next(_tours.begin(), 1)); it != _tours.end(); ++it) {
+    for (unsigned int i = 1; i < _tours.size(); ++i) {
         if (rnd.Rannyu() < mutationRate) {
+            Tour tour(this->getTour(i));
+            auto it = next(_tours.begin(), i);
             _tours.erase(it);
-            Tour tour(this->getTour(it));
             do
                 tour.mutate(rnd);
             while (!_tours.insert(tour).second);
@@ -172,26 +173,52 @@ GeneticAlgo :: tourSelection(const Population& pop)
     return pop.getTour(_rnd.RannyuDiscrete(1, pop.getPopulationSize() - 1));
 }
 
-Population
-GeneticAlgo :: evolvePopulation(const Population& pop)
+void
+GeneticAlgo :: evolvePopulation(const Population& pop, unsigned int nIter, string name, bool saveLastConf,
+  bool writeBestToFile,
+  bool writeHalfBestAvgToFile)
 {
+    // cout << "> ";
+    // for (unsigned int i = 0; i < pop.getPopulationSize(); ++i)
+    //     cout << pop.getTour(i).getDistance() << "|";
+    // cout << endl;
+
+    vector<double> bestL1OC(nIter);
+    vector<double> bestHalfAvgL1OC(nIter, 0.0d);
+
     Population newpop;
 
     newpop.addTour(pop.getTour(0));
 
-    while (newpop.getPopulationSize() < pop.getPopulationSize()) {
-        Tour parent1(this->tourSelection(pop));
-        Tour parent2(this->tourSelection(pop));
-        Tour child(parent1.crossover(parent2, _rnd, _crossoverRate));
-        newpop.addTour(child);
+    for (unsigned int i = 0; i < nIter; ++i) {
+        while (newpop.getPopulationSize() < pop.getPopulationSize()) {
+            Tour parent1(this->tourSelection(pop));
+            Tour parent2(this->tourSelection(pop));
+            Tour child(parent1.crossover(parent2, _rnd, _crossoverRate));
+            newpop.addTour(child);
+        }
+
+        newpop.mutate(_rnd, _mutationRate);
+
+        if (writeBestToFile) bestL1OC[i] = newpop.getTour(0).getDistance();
+
+        if (writeHalfBestAvgToFile) {
+            for (unsigned int j = 0; j < (unsigned int) (0.5 * newpop.getPopulationSize()); ++j)
+                bestHalfAvgL1OC[i] += newpop.getTour(j).getDistance();
+            bestHalfAvgL1OC[i] /= (0.5 * newpop.getPopulationSize());
+        }
+
+        // for (unsigned int i = 0; i < newpop.getPopulationSize(); ++i)
+        //     cout << newpop.getTour(i).getDistance() << "|";
+        // cout << endl;
     }
 
-
+    if (saveLastConf) newpop.getTour(0).writeTourToFile(name);
+    if (writeBestToFile) writeVector(bestL1OC, "bL1" + name);
+    if (writeHalfBestAvgToFile) writeVector(bestHalfAvgL1OC, "bHAL1" + name);
     // cout << newpop.getTour(0).getCity(0) << endl;
     // newpop.mutate(_rnd, _mutationRate);
-
-    return newpop;
-}
+} // GeneticAlgo::evolvePopulation
 
 /****************************************************************
  *****************************************************************
