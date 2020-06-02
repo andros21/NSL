@@ -115,8 +115,7 @@ struct TourCompare {
 
 class Population {
 private:
-    // set<Tour, TourCompare> _tours;
-    vector<Tour> _tours;
+    set<Tour, TourCompare> _tours;
 
 public:
 
@@ -126,29 +125,20 @@ public:
 
     Population(const Tour& initialTour, unsigned int populationSize);
 
-    // void
-    // addTour(const Tour& tour){ _tours.insert(tour); }
-
     void
-    addTour(const Tour& tour){ _tours.push_back(tour); }
-
-    // Tour
-    // getTour(unsigned int index) const { auto it = next(_tours.begin(), index); return *it; }
+    addTour(const Tour& tour){ _tours.insert(tour); }
 
     Tour
-    getTour(unsigned int index) const { return _tours[index]; }
+    getTour(unsigned int index) const { auto it = next(_tours.begin(), index); return *it; }
 
     // Tour
-    // getTour(vector<Tour>::iterator it) const { return *it; }
+    // getTour(set<Tour>::iterator it) const { return *it; }
 
     unsigned int
     getPopulationSize() const { return _tours.size(); }
 
     void
     mutate(Random & rnd, double mutationRate);
-
-    void
-    sortPopulation();
 };
 
 #endif // ifndef __Population__
@@ -169,8 +159,10 @@ public:
     Tour
     tourSelection(const Population& pop);
 
-    Population
-    evolvePopulation(const Population& pop);
+    void
+    evolvePopulation(const Population& pop, unsigned int nIter, string name, bool saveLastConf = true,
+      bool writeBestToFile        = false,
+      bool writeHalfBestAvgToFile = false);
 };
 
 #endif // ifndef __GeneticAlgo__

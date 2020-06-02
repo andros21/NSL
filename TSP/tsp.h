@@ -66,11 +66,17 @@ public:
     City
     getCity(unsigned int index) const { return _tour[index]; }
 
+    void
+    coutTour() const;
+
     bool
     containCity(City city){ return find(_tour.begin(), _tour.end(), city) != _tour.end(); }
 
     void
     resetFit(){ _fitness = 0.; _distance = 0.; }
+
+    void
+    measureFit();
 
     unsigned int
     numberOfCities() const { return _tour.size(); }
@@ -82,27 +88,24 @@ public:
     generateIndividual();
 
     double
-    getFitness();
+    getFitness() const { return _fitness; }
 
     double
-    getDistance();
+    getDistance() const { return _distance; }
 
     void
-    shuffleTour(){ random_shuffle(_tour.begin() + 1, _tour.end()); this->resetFit(); }
+    shuffleTour(Random & rnd);
 
     void
-    mutate(Random & rnd);
+    mutate(char type, unsigned int n, unsigned int m);
 
     Tour
-    crossover(const Tour& tour, Random & rnd, double crossoverRate);
+    crossover(const Tour& tour, unsigned int n, unsigned int m);
 };
-
-Tour
-shuffleTour(const Tour& tour);
 
 struct TourCompare {
     bool
-    operator () (Tour lhs, Tour rhs)
+    operator () (const Tour & lhs, const Tour & rhs)
     {
         return lhs.getFitness() > rhs.getFitness();
     }
@@ -115,7 +118,7 @@ struct TourCompare {
 
 class Population {
 private:
-    set<Tour, TourCompare> _tours;
+    vector<Tour> _tours;
 
 public:
 
@@ -123,22 +126,25 @@ public:
 
     Population(string inialTourFile, unsigned int populationSize);
 
-    Population(const Tour& initialTour, unsigned int populationSize);
+    Population(const Population& pop){ *this = pop; }
 
     void
-    addTour(const Tour& tour){ _tours.insert(tour); }
+    addTour(const Tour& tour){ _tours.push_back(tour); }
 
     Tour
-    getTour(unsigned int index) const { auto it = next(_tours.begin(), index); return *it; }
+    getTour(unsigned int index) const { return _tours[index]; }
 
-    // Tour
-    // getTour(set<Tour>::iterator it) const { return *it; }
+    vector<Tour>
+    getTours() const { return _tours; }
+
+    void
+    setTour(const Tour& tour, unsigned index){ _tours[index] = tour; }
 
     unsigned int
     getPopulationSize() const { return _tours.size(); }
 
     void
-    mutate(Random & rnd, double mutationRate);
+    sortPopulation();
 };
 
 #endif // ifndef __Population__
@@ -159,10 +165,8 @@ public:
     Tour
     tourSelection(const Population& pop);
 
-    void
-    evolvePopulation(const Population& pop, unsigned int nIter, string name, bool saveLastConf = true,
-      bool writeBestToFile        = false,
-      bool writeHalfBestAvgToFile = false);
+    Population
+    evolvePopulation(const Population& pop);
 };
 
 #endif // ifndef __GeneticAlgo__

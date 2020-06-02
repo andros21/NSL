@@ -42,6 +42,14 @@ Tour :: Tour(string ifile) : _tour(), _fitness(0.), _distance(0.)
 }
 
 void
+Tour :: coutTour() const
+{
+    for (auto el : _tour)
+        cout << el << "|";
+    cout << endl;
+}
+
+void
 Tour :: writeTourToFile(string ofile) const
 {
     ofstream ofs(outPath + ofile + ".csv");
@@ -54,170 +62,153 @@ Tour :: writeTourToFile(string ofile) const
     ofs.close();
 }
 
-double
-Tour :: getFitness()
-{
-    if (_fitness == 0.)
-        _fitness = 1. / getDistance();
-    return _fitness;
-}
-
-double
-Tour :: getDistance()
+void
+Tour :: measureFit()
 {
     if (_distance == 0.) {
         double distance(0.);
         for (auto it = _tour.begin(); it != _tour.end() - 1; it++)
             distance += it->distanceL1(*(it + 1));
-        distance += _tour.end()->distanceL1(*(_tour.begin()));
         _distance = distance;
     }
-    return _distance;
+    _fitness = 1. / _distance;
 }
 
 void
-Tour :: mutate(Random & rnd)
+Tour :: mutate(char type, unsigned int n, unsigned int m)
 {
-    for (auto it = ( _tour.begin() + 1); it != _tour.end(); ++it)
-        iter_swap(it, _tour.begin() + rnd.RannyuDiscrete(1, _tour.size() - 1));
+    if (type == '1')
+        iter_swap(_tour.begin() + n, _tour.begin() + m);
+    if (type == '2')
+        reverse(_tour.begin() + n, _tour.begin() + m);
 
     this->resetFit();
 }
 
 Tour
-Tour :: crossover(const Tour& tour, Random & rnd, double crossoverRate)
+Tour :: crossover(const Tour& tour, unsigned int n, unsigned int m)
 {
     if (_tour.size() != tour.numberOfCities() )
         cerr << "ERR: For crossing over tour size must be equal" << endl;
 
-    if (rnd.Rannyu() < crossoverRate) {
-        Tour child(_tour.size());
+    if (n > m) {
+        unsigned int appoPos = n;
+        n = m;
+        m = appoPos;
+    }
 
-        unsigned int startPos = rnd.RannyuDiscrete(1, _tour.size() - 1);
-        unsigned int endPos   = rnd.RannyuDiscrete(1, _tour.size() - 1);
+    Tour child(_tour.size());
+    Tour sub_tour(m + 1 - n);
 
-        while (startPos == endPos) {
-            endPos = rnd.RannyuDiscrete(1, _tour.size() - 1);
+    for (unsigned int i = n; i <= m; ++i) {
+        child.setCity(i, _tour[i]);
+        sub_tour.setCity(i - n, _tour[i]);
+    }
+
+    unsigned int j = 0;
+
+    for (unsigned int i = 0; i < tour.numberOfCities(); ++i) {
+        if (i < n || i > m) {
+            while (sub_tour.containCity(tour.getCity(j))) ++j;
+            child.setCity(i, tour.getCity(j));
+            ++j;
         }
+    }
 
-        if (startPos > endPos) {
-            unsigned int appoPos = startPos;
-            startPos = endPos;
-            endPos   = appoPos;
-        }
-
-        Tour sub_tour(endPos + 1 - startPos);
-
-        for (unsigned int i = startPos; i <= endPos; ++i) {
-            child.setCity(i, _tour[i]);
-            sub_tour.setCity(i - startPos, _tour[i]);
-        }
-
-        unsigned int j = 0;
-
-        for (unsigned int i = 0; i < tour.numberOfCities(); ++i) {
-            if (i < startPos || i > endPos) {
-                while (sub_tour.containCity(tour.getCity(j))) ++j;
-                child.setCity(i, tour.getCity(j));
-                ++j;
-            }
-        }
-        // cout << startPos << "," << endPos << "|" << sub_tour.numberOfCities() << "|" << endl;
-
-        return child;
-    } else { return tour; }
+    return child;
 } // Tour::crossover
-
-Tour
-shuffleTour(const Tour& tour)
-{
-    Tour Ctour(tour);
-
-    Ctour.shuffleTour();
-
-    return Ctour;
-}
 
 Population :: Population(string initialTourFile, unsigned int populationSize)
 {
     Tour tour(initialTourFile);
+    Random rnd;
 
-    for (unsigned int i = 0; i < populationSize; ++i)
-        _tours.insert(shuffleTour(tour));
-}
+    rnd.SetRandom();
 
-Population :: Population (const Tour& initialTour, unsigned int populationSize)
-{
-    for (unsigned int i = 0; i < populationSize; ++i)
-        _tours.insert(shuffleTour(initialTour));
+    auto nc = tour.numberOfCities();
+    for (unsigned int i = 0; i < populationSize; ++i) {
+        tour.mutate('1', rnd.RannyuDiscrete(1, nc - 2), rnd.RannyuDiscrete(1, nc - 2));
+        _tours.push_back(tour);
+    }
+
+    this->sortPopulation();
+
+    // for (auto & tour : _tours) {
+    //     auto FF = tour.getFitness();
+    //     cout << FF << "| " << count_if(_tours.begin(), _tours.end(), [&FF](Tour & TT){
+    //         return TT.getFitness() == FF;
+    //     }) << endl;
+    // }
 }
 
 void
-Population :: mutate(Random & rnd, double mutationRate)
+Population :: sortPopulation()
 {
-    for (unsigned int i = 1; i < _tours.size(); ++i) {
-        if (rnd.Rannyu() < mutationRate) {
-            Tour tour(this->getTour(i));
-            auto it = next(_tours.begin(), i);
-            _tours.erase(it);
-            do
-                tour.mutate(rnd);
-            while (!_tours.insert(tour).second);
-        }
-    }
+    for (auto & tour : _tours)
+        tour.measureFit();
+    sort(_tours.begin(), _tours.end(), TourCompare() );
 }
 
 Tour
 GeneticAlgo :: tourSelection(const Population& pop)
 {
-    return pop.getTour(_rnd.RannyuDiscrete(1, pop.getPopulationSize() - 1));
+    auto rr = _rnd.Rannyu();
+
+    for (unsigned int i = 1; i < pop.getPopulationSize(); ++i)
+        if (pop.getTour(i).getFitness() < rr)
+            return pop.getTour(i);
+
+    return pop.getTour(1);
 }
 
-void
-GeneticAlgo :: evolvePopulation(const Population& pop, unsigned int nIter, string name, bool saveLastConf,
-  bool writeBestToFile,
-  bool writeHalfBestAvgToFile)
+Population
+GeneticAlgo :: evolvePopulation(const Population& pop)
 {
-    // cout << "> ";
-    // for (unsigned int i = 0; i < pop.getPopulationSize(); ++i)
-    //     cout << pop.getTour(i).getDistance() << "|";
-    // cout << endl;
-
-    vector<double> bestL1OC(nIter);
-    vector<double> bestHalfAvgL1OC(nIter, 0.0d);
-
     Population newpop;
 
     newpop.addTour(pop.getTour(0));
+    auto nc = newpop.getTour(0).numberOfCities();
 
-    for (unsigned int i = 0; i < nIter; ++i) {
-        while (newpop.getPopulationSize() < pop.getPopulationSize()) {
-            Tour parent1(this->tourSelection(pop));
-            Tour parent2(this->tourSelection(pop));
-            Tour child(parent1.crossover(parent2, _rnd, _crossoverRate));
-            newpop.addTour(child);
+    while (newpop.getPopulationSize() < pop.getPopulationSize()) {
+        Tour parent1(this->tourSelection(pop));
+        Tour parent2(this->tourSelection(pop));
+        if (_rnd.Rannyu() < _crossoverRate) {
+            auto nn = _rnd.RannyuDiscrete(1, nc - 2);
+            auto mm = _rnd.RannyuDiscrete(1, nc - 2);
+            Tour child1(parent1.crossover(parent2, nn, mm));
+            Tour child2(parent2.crossover(parent1, nn, mm));
+            newpop.addTour(child1);
+            newpop.addTour(child2);
+        } else {
+            newpop.addTour(parent1);
+            newpop.addTour(parent2);
         }
-
-        newpop.mutate(_rnd, _mutationRate);
-
-        if (writeBestToFile) bestL1OC[i] = newpop.getTour(0).getDistance();
-
-        if (writeHalfBestAvgToFile) {
-            for (unsigned int j = 0; j < (unsigned int) (0.5 * newpop.getPopulationSize()); ++j)
-                bestHalfAvgL1OC[i] += newpop.getTour(j).getDistance();
-            bestHalfAvgL1OC[i] /= (0.5 * newpop.getPopulationSize());
-        }
-
-        // for (unsigned int i = 0; i < newpop.getPopulationSize(); ++i)
-        //     cout << newpop.getTour(i).getDistance() << "|";
-        // cout << endl;
     }
 
-    if (saveLastConf) newpop.getTour(0).writeTourToFile(name);
-    if (writeBestToFile) writeVector(bestL1OC, "bL1" + name);
-    if (writeHalfBestAvgToFile) writeVector(bestHalfAvgL1OC, "bHAL1" + name);
-    // cout << newpop.getTour(0).getCity(0) << endl;
-    // newpop.mutate(_rnd, _mutationRate);
+    for (unsigned int i = 1; i < newpop.getPopulationSize(); ++i) {
+        Tour newtour(newpop.getTour(i));
+        if (_rnd.Rannyu() < _mutationRate) {
+            newtour.mutate('1', _rnd.RannyuDiscrete(1, nc - 2), _rnd.RannyuDiscrete(1, nc - 2));
+            newpop.setTour(newtour, i);
+        }
+        if (_rnd.Rannyu() < _mutationRate) {
+            newtour.mutate('2', _rnd.RannyuDiscrete(1, nc - 2), _rnd.RannyuDiscrete(1, nc - 2));
+            newpop.setTour(newtour, i);
+        }
+    }
+
+    newpop.sortPopulation();
+
+    // cout << newpop.getTour(0).getFitness() << "|" << newpop.getTour(1).getFitness() << "|"
+    //      << newpop.getTour(2).getFitness() << endl;
+    // newpop.getTour(0).coutTour();
+
+
+    // for (unsigned int i = 0; i < newpop.getPopulationSize(); ++i)
+    //     cout << newpop.getTour(i).getDistance() << "|";
+    // cout << endl;
+
+    return newpop;
 } // GeneticAlgo::evolvePopulation
 
 /****************************************************************
