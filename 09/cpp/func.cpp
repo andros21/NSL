@@ -10,13 +10,16 @@ randomOnCircle(unsigned int npoints, double radius, string ofile)
     rnd.SetRandom();
 
     double theta;
+    pair<double, double> spt;
     ofstream Cities(outPath + ofile + ".tsv");
 
     if (Cities.is_open()) {
         for (unsigned int i = 0; i < npoints; ++i) {
             theta = rnd.Rannyu(0., 2 * M_PI);
+            if (i == 0) spt = { radius * cos(theta), radius * sin(theta) };
             Cities << radius * cos(theta) << "\t" << radius * sin(theta) << endl;
         }
+        Cities << spt.first << "\t" << spt.second << endl;
     } else { cerr << "ERROR: Unable to open " << ofile << ".tsv" << endl; }
     Cities.close();
 }
@@ -28,12 +31,17 @@ randomInSquare(unsigned int npoints, double edge, string ofile)
 
     rnd.SetRandom();
 
+    pair<double, double> xy;
+    pair<double, double> spt;
     ofstream Cities(outPath + ofile + ".tsv");
 
     if (Cities.is_open()) {
         for (unsigned int i = 0; i < npoints; ++i) {
-            Cities << rnd.Rannyu(0., edge) << "\t" << rnd.Rannyu(0., edge) << endl;
+            xy = { rnd.Rannyu(0., edge), rnd.Rannyu(0., edge) };
+            if (i == 0) spt = { xy.first, xy.second };
+            Cities << xy.first << "\t" << xy.second << endl;
         }
+        Cities << spt.first << "\t" << spt.second << endl;
     } else { cerr << "ERROR: Unable to open " << ofile << ".tsv" << endl; }
     Cities.close();
 }
