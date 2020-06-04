@@ -171,6 +171,42 @@ public:
 
 #endif // ifndef __GeneticAlgo__
 
+
+#ifndef __GeneticAlgo__
+# define __GeneticAlgo_
+
+class SimulatedAnnealingAlgo {
+private:
+    Random _rnd;
+    double _temp;
+    unsigned int Macpt, Mttot;
+public:
+    SimulatedAnnealingAlgo(double temp) : _temp(temp), Macpt(0), Mttot(0){ _rnd.SetRandom(); }
+
+    double
+    getTemp() const { return _temp; }
+
+    void
+    setTemp(double temp){ _temp = temp; }
+
+    double
+    getMetroRatio();
+
+    void
+    coutMetroRatio();
+
+    void
+    resetMetroRatio();
+
+    char
+    tourSelection(double lp, double lc);
+
+    Tour
+    evolveTour(const Tour& tour);
+};
+
+#endif // ifndef __GeneticAlgo__
+
 /****************************************************************
  *****************************************************************
  *  _/    _/  _/_/_/  _/      Numerical Simulation Laboratory

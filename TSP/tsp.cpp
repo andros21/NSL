@@ -211,6 +211,65 @@ GeneticAlgo :: evolvePopulation(const Population& pop)
     return newpop;
 } // GeneticAlgo::evolvePopulation
 
+double
+SimulatedAnnealingAlgo :: getMetroRatio()
+{
+    if (Mttot == 0) {
+        return 0.;
+    }
+    return (double) Macpt / Mttot;
+}
+
+void
+SimulatedAnnealingAlgo :: coutMetroRatio()
+{
+    cout << "\rMetropolis Ratio: " << round(this->getMetroRatio() * 100) << " " << flush;
+}
+
+void
+SimulatedAnnealingAlgo :: resetMetroRatio()
+{
+    Macpt = 0;
+    Mttot = 0;
+}
+
+char
+SimulatedAnnealingAlgo :: tourSelection(double lp, double lc)
+{
+    double alpha, rr;
+
+    alpha = min(1., exp(-(1. / _temp) * (lc - lp)));
+    rr    = _rnd.Rannyu();
+
+    Mttot++;
+    if (rr <= alpha) {
+        Macpt++;
+        return 'c';
+    } else {
+        return 'p';
+    }
+}
+
+Tour
+SimulatedAnnealingAlgo :: evolveTour(const Tour& tour)
+{
+    auto nc = tour.numberOfCities();
+    Tour parent(tour);
+    Tour child(parent);
+
+    if (_rnd.Rannyu() <= 0.5)
+        child.mutate('1', _rnd.RannyuDiscrete(1, nc - 2), _rnd.RannyuDiscrete(1, nc - 2));
+    else
+        child.mutate('2', _rnd.RannyuDiscrete(1, nc - 2), _rnd.RannyuDiscrete(1, nc - 2));
+    parent.measureFit();
+    child.measureFit();
+    if (tourSelection(parent.getDistance(), child.getDistance()) == 'c')
+        parent = child;
+    // cout << Macpt << "|" << Mttot << endl;
+
+    return parent;
+}
+
 /****************************************************************
  *****************************************************************
  *  _/    _/  _/_/_/  _/      Numerical Simulation Laboratory
