@@ -172,8 +172,8 @@ public:
 #endif // ifndef __GeneticAlgo__
 
 
-#ifndef __GeneticAlgo__
-# define __GeneticAlgo_
+#ifndef __SimulatedAnnealingAlgo__
+# define __SimulatedAnnealingAlgo__
 
 class SimulatedAnnealingAlgo {
 private:
@@ -205,7 +205,7 @@ public:
     evolveTour(const Tour& tour);
 };
 
-#endif // ifndef __GeneticAlgo__
+#endif // ifndef __SimulatedAnnealingAlgo__
 
 /****************************************************************
  *****************************************************************
