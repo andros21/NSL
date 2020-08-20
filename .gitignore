@@ -4,3 +4,5 @@ __init.py__
 .ipynb_checkpoints
 *.x
 *.mp4
+*.o
+*.gch
