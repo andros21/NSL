@@ -90,7 +90,8 @@ main(int argc, char * argv[])
       };
 
 
-    blockingMethod(eign_100_blk, 1e5, 100, "r-100"); // simulation <r>_{100}
+    blockingMethod(eign_100_blk, 5e4, 100, "r-100-eq"); // equilibration <r>_{100}
+    blockingMethod(eign_100_blk, 1e5, 100, "r-100");    // simulation    <r>_{100}
     rnd.resetMetroRatio();
 
     /* 210 */
@@ -130,7 +131,8 @@ main(int argc, char * argv[])
       };
 
 
-    blockingMethod(eign_210_blk, 1e5, 100, "r-210"); // simulation <r>_{210}
+    blockingMethod(eign_210_blk, 5e4, 100, "r-210-eq"); // equilibration <r>_{210}
+    blockingMethod(eign_210_blk, 1e5, 100, "r-210");    // simulation    <r>_{210}
     rnd.resetMetroRatio();
 
     /***************************
@@ -181,7 +183,8 @@ main(int argc, char * argv[])
           return accumulate(vct.begin(), vct.end(), 0.0d, acc) / L;
       };
 
-    blockingMethod(eign_gaus_100_blk, 1e5, 100, "r-g-100"); // simulation <r>_{100}
+    blockingMethod(eign_gaus_100_blk, 5e4, 100, "r-g-100-eq"); // equilibration <r>_{100}
+    blockingMethod(eign_gaus_100_blk, 1e5, 100, "r-g-100");    // simulation    <r>_{100}
     rnd.resetMetroRatio();
 
     /* 210 */
@@ -220,7 +223,8 @@ main(int argc, char * argv[])
           return accumulate(vct.begin(), vct.end(), 0.0d, acc) / L;
       };
 
-    blockingMethod(eign_gaus_210_blk, 1e5, 100, "r-g-210"); // simulation <r>_{210}
+    blockingMethod(eign_gaus_210_blk, 5e4, 100, "r-g-210-eq"); // equilibration <r>_{210}
+    blockingMethod(eign_gaus_210_blk, 1e5, 100, "r-g-210");    // simulation    <r>_{210}
     rnd.resetMetroRatio();
 
     return 0;
