@@ -1,16 +1,13 @@
 ### TODO
 
 - [ ] Write a README file to list repo structure
-- [ ] Ex01 review Lorentzian distribution check
-- [ ] Ex01 review Buffon simulation parameters
-- [ ] Ex02 try to map lambda function in func.h func.cpp to clean up main
-- [ ] Ex03 try to map lambda function in func.h func.cpp to clean up main
+- [x] Ex01 review Lorentzian distribution check
+- [x] Ex01 review Buffon simulation parameters
 - [ ] Ex04 should be rerun, only thermo variables g(r) is ok
-- [ ] Ex04 make more clear inside jpn the equilibration part
+- [x] Ex04 make more clear inside jpn the equilibration part
 - [x] Ex05 add global variable inside RC class to check Metropolis accept/reject ratio
 - [x] Ex05 Modify Metropolis3d while loop error, and check if consistent with results
-- [ ] Ex05 try to map lambda function in func.h func.cpp to clean up main -> IMPOSSIBLE
-- [ ] Ex05 check if better results adding an equilibrate function that loop without blocking
+- [x] Ex05 check if better results adding an equilibrate function that loop without blocking
 - [ ] Ex06 add global variable inside I1D class to check Metropolis accept/reject ratio
 - [ ] Ex06 improve equilibrate loop, checking equilibration using plot
 - [ ] Ex06 inside Metropolis algo and Gibbs algo, modif \_nspin -1 error
@@ -18,5 +15,5 @@
 - [ ] Ex07 cpp implementation of autocorrelation Ex07.1.3
 - [ ] Ex07 when all is correct cp raw move 3-4M .out file 5e5 in the out folder
 - [ ] Ex08 Complete Ex 08.3 PIMC/PIGS code
-- [ ] Ex10 Complete Ex 10.2 GA with PMI
+- [x] Ex10 Complete Ex 10.2 GA with PMI
 - [ ] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
