@@ -1,0 +1,6 @@
+div.cell { width: 80% !important; }
+
+div.text_cell_render { 
+	font-family: Palatino Linotype, "Book Antiqua", "Palatino", "serif"; 
+	font-size: 12pt; 
+}
