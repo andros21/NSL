@@ -113,12 +113,10 @@ I1D :: Move()
     unsigned int k;
 
     if (_method == 'M') {
-        // while (true) {
         double aa;
         k  = _rnd.RannyuDiscrete(0, _nspin - 1);
         aa = min(1., exp(-(1. / _temp) * this->getEnergyGap(k)));
         if (_rnd.Rannyu() < aa) _mu[k] = -_mu[k];
-        // }
     }
     if (_method == 'G') {
         double pp;
