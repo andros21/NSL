@@ -8,12 +8,12 @@
 - [x] Ex05 add global variable inside RC class to check Metropolis accept/reject ratio
 - [x] Ex05 Modify Metropolis3d while loop error, and check if consistent with results
 - [x] Ex05 check if better results adding an equilibrate function that loop without blocking
-- [ ] Ex06 add global variable inside I1D class to check Metropolis accept/reject ratio
-- [ ] Ex06 improve equilibrate loop, checking equilibration using plot
-- [ ] Ex06 inside Metropolis algo and Gibbs algo, modif \_nspin -1 error
-- [ ] Ex06 should be rerun, cause low range and not optimal parameters was chosen
-- [ ] Ex07 cpp implementation of autocorrelation Ex07.1.3
-- [ ] Ex07 when all is correct cp raw move 3-4M .out file 5e5 in the out folder
+- [x] Ex06 add global variable inside I1D class to check Metropolis accept/reject ratio
+- [x] Ex06 improve equilibrate loop, checking equilibration using plot
+- [x] Ex06 inside Metropolis algo and Gibbs algo, modif \_nspin -1 error
+- [x] Ex06 should be rerun, cause low range and not optimal parameters was chosen
+- [x] Ex07 cpp implementation of autocorrelation Ex07.1.3
+- [ ] Ex07 zip raw move 3-4M .out file 5e5, inside out
 - [ ] Ex08 Complete Ex 08.3 PIMC/PIGS code
 - [x] Ex10 Complete Ex 10.2 GA with PMI
 - [ ] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
