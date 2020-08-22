@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# Data blocking evolution
+
 import numpy as np
 import pandas as pd
 import os
@@ -35,7 +40,7 @@ states = ['solid', 'liquid', 'gas']
 vars = "PV"
 result = dict()
 
-os.chdir('/home/rox/bktemp')
+os.chdir('../out/')
 
 for state in states:
     print(state)
