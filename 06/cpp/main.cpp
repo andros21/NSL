@@ -20,9 +20,9 @@ main(int argc, char * argv[])
     *  Exercise 06.1.1
     ***************************/
 
-    I1D isi;
-    double tf(0.5);
-    unsigned int t_size(10);
+    I1D isi;                 // Load class, using default algo: Metropolis
+    double tf(0.5);          // Final temperature
+    unsigned int t_size(10); // Temperature array size
 
     /****
     *  after first run, uncomment method below
@@ -31,23 +31,23 @@ main(int argc, char * argv[])
     // isi.setFieldh(0.02);
 
     for (auto t : getTempRange(isi.getTemp(), tf, t_size)) {
-        isi.setTemp(t);
-        isi.Equilibrate(1000);
-        isi.blockingMethod();
+        isi.setTemp(t);         // Set temperature every step
+        isi.Equilibrate(50000); // Equilibrate before real simulation
+        isi.blockingMethod();   // Blocking method at current temp
     }
 
     /***************************
     *  Exercise 06.1.2
     ***************************/
 
-    isi.setTemp(2.);
-    isi.setRandomSpin();
-    isi.setMethod('G');
+    isi.setTemp(2.);     // Reset initial temperature
+    isi.setRandomSpin(); // Reset spins
+    isi.setMethod('G');  // Set Gibbs algo for movements
 
     for (auto t : getTempRange(isi.getTemp(), tf, t_size)) {
-        isi.setTemp(t);
-        isi.Equilibrate(1000);
-        isi.blockingMethod();
+        isi.setTemp(t);         // Set temperature every step
+        isi.Equilibrate(50000); // Equilibrate before real simulation
+        isi.blockingMethod();   // Blocking method at current temperature
     }
 
     return 0;
