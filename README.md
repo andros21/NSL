@@ -17,10 +17,10 @@ The repo is structured as follow:
      * `default.py` custom style and default import packages inside `jupyter-notebook`
 * Classes build to solve easily and clearly certain exercices, permitting code re-use
    * **RC | Random Class**, the main class, containing a lot of methods (the most important **blockingMethod**) for different types of exercises and minor classes
-   * **MD | Molecolar Dynamic Class**, class for deterministic molecolar dynamic simulation, used for **Ex. 04** an d **Ex. 07**
+   * **MD | Molecolar Dynamic Class**, class for deterministic molecolar dynamic simulation, used for **Ex. 04** and **Ex. 07**
    * **I1D | Ising 1 Dimension Class**, class for Ising 1D Model simulation, used for **Ex. 06**
    * **MCMD | Monte Carlo Molecolar Dynamic Class**, class for dynamic molecolar dynamic simulation using Monte Carlo methods, partially derived from **MD** class, used for **Ex. 07**
-   * **QMC_1D | Quantum Monte Carlo 1D**, not a real class, is the code provided for PIGS/PIMS simulation, used for **Ex. 08**
+   * **QMC_1D | Quantum Monte Carlo 1D**, not a real class, is the code provided for PIGS/PIMS, used for **Ex. 08**
    * **TSP | Traveling Salesman Problem Class**, class to solve **TSP** optimization problem, this class contain both **Genetic algo** and **Simulated Annealing algo** for the resolution of the problem. Used for **Ex. 09** and **Ex. 10**
    
    Exceptions:
@@ -33,7 +33,8 @@ The repo is structured as follow:
    * In the **Ex. 07** there is a `data-blocking-sm.py` inside `python/` that I used to compute multiple data-blocking starting from raw `.out` data
    * In the **Ex. 08** there is a `theory.py` inside `python/` that is only a trivial file that the jupyter import, containing the theoretical curves used for checking the simulation results
    * In the **Ex. 08** there is a `get-intg.py` inside `python/` that I used to normalize the eigenfunction of the exercise, and print out very long mathematical expressions as cpp code and/or python code, ready to be copyed and pasted
-   * In the **Ex. 10** there is the standard `cpp/` and the `cpp-mpi/` dir containing the code used for the parallelization (MPI). Because I used a different implementation of **TSP** class (files `tsp-mpi.(h|cpp)`, I divided the `main.cpp` into two pieces that must be compiled using separated `Makefile`
+   * In the **Ex. 10** there is the standard `cpp/` and the `cpp-mpi/` dir containing the code used for the parallelization (MPI). Because I used a different implementation of **TSP** class (files `tsp-mpi.(h|cpp)`,\
+I divided the `main.cpp` into two pieces that must be compiled using separated `Makefile`
    * In the **Ex. 11** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
    * In the **Ex. 12** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
    
