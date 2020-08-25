@@ -25,7 +25,7 @@ The repo is structured as follow:
 * `custom.css` global custom template for jupyter-notebook
 * `theme.mplstyle` global custom template for matplotlib
    
-   Exceptions:
+   **Exceptions:**
    
    * Some **class** folders and `cpp/` folders, can contains some input file for parameters, for example **RC** reads `Primes` and `seed.in`
    * In the **Ex. 04** I preferred to save the configuration position **r** and **r-old** inside `cpp/` instead `out/` because are more input parameters that output results needed for python report
@@ -40,3 +40,13 @@ I divided the `main.cpp` into two pieces that must be compiled using separated `
    * In the **Ex. 11** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
    * In the **Ex. 12** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
    
+## :star: Features
+
+* As much as possible I used **stdlib** objects and methods (not always optimized)
+* As much as possible I used a global `blockingMethod` pub function inside **RC** class, re-using code for different exercises.\
+The main idea is to define a **lambda** function in the `main.cpp` of the exercise, that can be passed as `function` object (thanks to `functional` std library) to the `blockingMethod`, able to compute what needed at each simulation step.
+* Custom style for jupyter-notebooks and matplotlib plots
+  ```python
+  from default import *
+  ```
+  > **Warning:** the GITHUB preview of jupyter-notebooks NOT RENDER the custom styles, that can only be visible if loading the notebooks using python kernel and run the 1st input cell
