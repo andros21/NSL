@@ -1,3 +1,8 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
+# SYMPY COPY AND PASTE SCRIPT
+
 from sympy import Symbol, integrate, oo, Derivative, simplify, exp
 from sympy.printing import print_ccode
 
