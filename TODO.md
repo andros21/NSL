@@ -1,9 +1,8 @@
 ### TODO
 
-- [ ] Write a README file to list repo structure
+- [x] Write a README file to list repo structure
 - [x] Ex01 review Lorentzian distribution check
 - [x] Ex01 review Buffon simulation parameters
-- [ ] Ex04 should be rerun, only thermo variables g(r) is ok
 - [x] Ex04 make more clear inside jpn the equilibration part
 - [x] Ex05 add global variable inside RC class to check Metropolis accept/reject ratio
 - [x] Ex05 Modify Metropolis3d while loop error, and check if consistent with results
@@ -16,4 +15,6 @@
 - [ ] Ex07 zip raw move 3-4M .out file 5e5, inside out
 - [ ] Ex08 Complete Ex 08.3 PIMC/PIGS code
 - [x] Ex10 Complete Ex 10.2 GA with PMI
-- [ ] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
+- [ ] Check Exs where the is `ax2.yaxis.tick_right()` to change
+- [ ] Ex 11, 12 add description inside jpn
+- [x] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
