@@ -15,6 +15,6 @@
 - [ ] Ex07 zip raw move 3-4M .out file 5e5, inside out
 - [ ] Ex08 Complete Ex 08.3 PIMC/PIGS code
 - [x] Ex10 Complete Ex 10.2 GA with PMI
-- [ ] Check Exs where the is `ax2.yaxis.tick_right()` to change
+- [x] Check Exs where the is `ax2.yaxis.tick_right()` to change
 - [ ] Ex 11, 12 add description inside jpn
 - [x] All Ex more verbose and comment inside jpn, and inside stdout of main.cpp especially for long simulation
