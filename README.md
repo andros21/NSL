@@ -33,8 +33,8 @@ The repo is structured as follow:
    * In the **Ex. 06** there is a `theory.py` inside `python/` that is only a trivial file that the jupyter import, containing the theoretical curves used for checking the simulation results
    * In the **Ex. 07** I preferred to save the configuration position **r** inside `cpp/` instead `out/` because are more input parameters that output results needed for python report
    * In the **Ex. 07** there is a `correlation.cpp` source code inside `cpp/` that I used to compute auto-correlation function starting from `out-data-5e5.tar.xz` data, there is no compilation rule inside `Makefile` for it, must be compiled manually
-   * In the **Ex 07** a part of output data inside `out/` directory, was compressed inside the file `out-data-5e5.tar.xz`
-   * In the **Ex. 07** there is a `data-blocking-sm.py` inside `python/` that I used to compute multiple data-blocking starting from raw `.out` data
+   * In the **Ex. 07** a part of output data inside `out/` directory, was compressed inside the file `out-data-5e5.tar.xz`
+   * In the **Ex. 07** there is a `data-blocking-sm.py` inside `python/` that I used to compute multiple data-blocking starting from `out-data-5e5.tar.xz` data
    * In the **Ex. 08** there is a `theory.py` inside `python/` that is only a trivial file that the jupyter import, containing the theoretical curves used for checking the simulation results
    * In the **Ex. 08** there is a `get-intg.py` inside `python/` that I used to normalize the eigenfunction of the exercise, and print out very long mathematical expressions as cpp code and/or python code, ready to be copyed and pasted
    * In the **Ex. 10** there is the standard `cpp/` and the `cpp-mpi/` dir containing the code used for the parallelization (MPI). Because I used a different implementation of **TSP** class (files `tsp-mpi.(h|cpp)`),\
