@@ -32,7 +32,8 @@ The repo is structured as follow:
    * In the **Ex. 04** I preferred to save the configuration position **r** and **r-old** inside `cpp/` instead `out/` because are more input parameters that output results needed for python report
    * In the **Ex. 06** there is a `theory.py` inside `python/` that is only a trivial file that the jupyter import, containing the theoretical curves used for checking the simulation results
    * In the **Ex. 07** I preferred to save the configuration position **r** inside `cpp/` instead `out/` because are more input parameters that output results needed for python report
-   * In the **Ex. 07** there is a `correlation.cpp` source code inside `cpp/` that I used to compute auto-correlation function starting from raw `.out` data, there is no compilation rule inside `Makefile` for it, must be compiled manually
+   * In the **Ex. 07** there is a `correlation.cpp` source code inside `cpp/` that I used to compute auto-correlation function starting from `out-data-5e5.tar.xz` data, there is no compilation rule inside `Makefile` for it, must be compiled manually
+   * In the **Ex 07** a part of output data inside `out/` directory, was compressed inside the file `out-data-5e5.tar.xz`
    * In the **Ex. 07** there is a `data-blocking-sm.py` inside `python/` that I used to compute multiple data-blocking starting from raw `.out` data
    * In the **Ex. 08** there is a `theory.py` inside `python/` that is only a trivial file that the jupyter import, containing the theoretical curves used for checking the simulation results
    * In the **Ex. 08** there is a `get-intg.py` inside `python/` that I used to normalize the eigenfunction of the exercise, and print out very long mathematical expressions as cpp code and/or python code, ready to be copyed and pasted
@@ -53,4 +54,4 @@ The main idea is to define a **lambda** function in the `main.cpp` of the exerci
   ```
   > **Warning:** the GITHUB preview of jupyter-notebooks NOT RENDER the custom styles, that can only be visible if loading the notebooks using python kernel and run the 1st input cell
   
-  For this reason insde each `python/` folder there is a `html` file that can be used to read comfortably the jupyter-notebook as static file with custom style
+  For this reason inside each `python/` folder there is a `html` file that can be used to read comfortably the jupyter-notebook as static file with custom style
