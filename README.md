@@ -40,7 +40,7 @@ The repo is structured as follow:
    * In the **Ex. 10** there is the standard `cpp/` and the `cpp-mpi/` dir containing the code used for the parallelization (MPI). Because I used a different implementation of **TSP** class (files `tsp-mpi.(h|cpp)`),\
 I divided the `main.cpp` into two pieces that must be compiled using separated `Makefile`
    * In the **Ex. 11** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
-   * In the **Ex. 12** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
+   * In the **Ex. 12** `cpp/` is empty
    * In the **Ex. 12** there is a `digits.py` inside `python/` that I used to load gimp png digits inside jupyter-notebook
    
 ## :star: Features
