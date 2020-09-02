@@ -15,9 +15,10 @@ The repo is structured as follow:
   * `python/`
      * `ipynb` report of the exercise with graphs and parameters used in the exercise simulation
      * `default.py` custom style and default import packages inside `jupyter-notebook`
+     * `html` jupyter-notebook converted in static html to easily read (with custom style)
 * Classes build to solve easily and clearly certain exercices, permitting code re-use
    * **RC | Random Class**, the main class, containing a lot of methods (the most important **blockingMethod**) for different types of exercises and minor classes
-   * **MD | Molecolar Dynamic Class**, class for deterministic molecolar dynamic simulation, used for **Ex. 04** and **Ex. 07**
+   * **MD | Molecolar Dynamic Class**, class for deterministic molecolar dynamic sim, used for **Ex. 04** and **Ex. 07**
    * **I1D | Ising 1 Dimension Class**, class for Ising 1D Model simulation, used for **Ex. 06**
    * **MCMD | Monte Carlo Molecolar Dynamic Class**, class for dynamic molecolar dynamic simulation using Monte Carlo methods, partially derived from **MD** class, used for **Ex. 07**
    * **QMC_1D | Quantum Monte Carlo 1D**, not a real class, is the code provided for PIGS/PIMS, used for **Ex. 08**
@@ -39,14 +40,17 @@ The repo is structured as follow:
 I divided the `main.cpp` into two pieces that must be compiled using separated `Makefile`
    * In the **Ex. 11** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
    * In the **Ex. 12** `cpp/` and `out/` are empty, cause all exercise (simulation+report) is inside jupyter-notebook
+   * In the **Ex. 12** there is a `digits.py` inside `python/` that I used to load gimp png digits inside jupyter-notebook
    
 ## :star: Features
 
 * As much as possible I used **stdlib** objects and methods (not always optimized)
 * As much as possible I used a global `blockingMethod` pub function inside **RC** class, re-using code for different exercises.\
-The main idea is to define a **lambda** function in the `main.cpp` of the exercise, that can be passed as `function` object (thanks to `functional` std library) to the `blockingMethod`, able to compute what needed at each simulation step.
+The main idea is to define a **lambda** function in the `main.cpp` of the exercise, that can be passed as `function` object (thanks to `functional` std library) to the `blockingMethod`, able to compute what needed at each simulation step
 * Custom style for jupyter-notebooks and matplotlib plots
   ```python
   from default import *
   ```
   > **Warning:** the GITHUB preview of jupyter-notebooks NOT RENDER the custom styles, that can only be visible if loading the notebooks using python kernel and run the 1st input cell
+  
+  For this reason insde each `python/` folder there is a `html` file that can be used to read comfortably the jupyter-notebook as static file with custom style
