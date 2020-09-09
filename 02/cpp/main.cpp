@@ -28,9 +28,9 @@ main(int argc, char * argv[])
           return cos(M_PI * x * 0.5);
       };
     // cos Taylor 2 order function normalized
-    double norm = 1. - (1. / 6.) * pow(M_PI * 0.5, 2);
+    double norm = 1. - (1. / 6.) * pow(M_PI * 0.5, 2) + (1. / (24. * 5.)) * pow(M_PI * 0.5, 4);
     auto cosft = [&norm](double x){
-          return (1. - 0.5 * pow(M_PI * x * 0.5, 2)) * pow(norm, -1);
+          return (1. - 0.5 * pow(M_PI * x * 0.5, 2) + (1. / 24.) * pow(M_PI * x * 0.5, 4)) * pow(norm, -1);
       };
 
     // cos / cos Taylor function
@@ -111,7 +111,7 @@ main(int argc, char * argv[])
             sum2 += pow(DRW[j][i], 2);
         }
         DRW_mean[i] = sqrt(sum / NN);
-        DRW_dev[i]  = sqrt(sqrt((sum2 / NN - pow(DRW_mean[i], 2)) / NN));
+        DRW_dev[i]  = sqrt(sqrt((sqrt(sum2 / NN) - pow(DRW_mean[i], 2)) / NN));
     }
 
     writeVector(DRW_mean, "DRW_mean"); // write DRW mean
@@ -158,7 +158,7 @@ main(int argc, char * argv[])
             sum2 += pow(CRW[j][i], 2);
         }
         CRW_mean[i] = sqrt(sum / NN);
-        CRW_dev[i]  = sqrt(sqrt((sum2 / NN - pow(CRW_mean[i], 2)) / NN));
+        CRW_dev[i]  = sqrt(sqrt((sqrt(sum2 / NN) - pow(CRW_mean[i], 2)) / NN));
     }
 
     writeVector(CRW_mean, "CRW_mean"); // Write CRW mean
