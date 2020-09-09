@@ -13217,7 +13217,8 @@ $$ r_{old}=r(t-dt)= \text{Pbc}\left[r(t) - v(t) * dt\right]$$<ol>
 <li>$T\propto K$</li>
 <li><strong>Verlet algo</strong> must preserve <strong>total energy</strong> $E=\text{cost}$</li>
 </ul>
-<p>And those proprieties are met very well in <strong>liquid</strong> and <strong>solid</strong>, a little less in <strong>gas</strong></p>
+<p>And those proprieties are met very well in <strong>liquid</strong> and <strong>solid</strong>, a little less in <strong>gas</strong>. The gas simulation unfortunately not reached a full equilibration, surely using more simulation steps will reach it.</p>
+<p>Again, in gas simulation, precisely in $E$ computation, little problems of decimal truncation have happened during the simulation process, as we can see from the unreal energy step plot.</p>
 <p>In all the state of matter the $E$ seems to be not costant, as $V$ or $T$, but those graphs are on different scale. In fact the oscillations of $E$ are always on lower orders compared with energy scales of $T$ and $V$.</p>
 
 </div>
